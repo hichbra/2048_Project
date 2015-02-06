@@ -31,13 +31,11 @@ public class Plateau
 		
 		
 		
-		// Config Test : premiere ligne pleine de 2 
+		// Config Test 
 		plateau.get(0).set(0,2);
-		plateau.get(0).set(1,2);
-		plateau.get(0).set(2,2);
-		plateau.get(0).set(3,2);
-		
-
+		plateau.get(1).set(0,2);
+		plateau.get(2).set(0,2);
+		plateau.get(3).set(0,2);
 		
 	}
 	
@@ -128,13 +126,13 @@ public class Plateau
 		// Pour toutes les lignes
 		for ( ArrayList<Integer> ligne : plateau )
 		{
+			// Pour toutes les cellules de la ligne de gauche à droite
 			for ( int cellule = 1 ; cellule <= 3 ; cellule++ )
 			{
 				// On ne déplace pas les cases vides
 				if ( ligne.get(cellule) != 0 )
 				{
-					/* Pour toutes les cellules de la ligne de gauche à droite
-					 * On décale la cellule vers la gauche jusqu'à rencontrer un obstacle 
+					/* On décale la cellule vers la gauche jusqu'à rencontrer un obstacle 
 					 * ( qui entraine un bloquage ou une fusion ) 
 					 */
 					int celluleGauche = cellule-1 ;
@@ -182,13 +180,13 @@ public class Plateau
 		// Pour toutes les lignes
 		for ( ArrayList<Integer> ligne : plateau )
 		{
+			// Pour toutes les cellules de la ligne de droite à gauche
 			for ( int cellule = 2 ; cellule >= 0 ; cellule-- )
 			{
 				// On ne déplace pas les cases vides
 				if ( ligne.get(cellule) != 0 )
 				{
-					/* Pour toutes les cellules de la ligne de droite à gauche
-					 * On décale la cellule vers la droite jusqu'à rencontrer un obstacle 
+					/* On décale la cellule vers la droite jusqu'à rencontrer un obstacle 
 					 * ( qui entraine un bloquage ou une fusion ) 
 					 */
 					int celluleDroite = cellule+1 ;
@@ -203,7 +201,7 @@ public class Plateau
 						
 					}
 
-					/* si la cellule n'est pas arrivé au bout, c'est parce qu'il a été bloqué
+					/* Si la cellule n'est pas arrivé au bout, c'est parce qu'il a été bloqué
 					 * par une autre cellule. Dans ce cas, possibilité de fusion.
 					 */
 					if ( celluleDroite != 4 )
@@ -225,14 +223,112 @@ public class Plateau
 		return possible ;
 	}
 	
+	/**
+	 * Toutes les cellules vont en haut. Si 2 cellules identique se rencontre,
+	 * elle fusionne et sa valeur double.
+	 * @return possible
+	 */
 	public boolean haut()
 	{
-		return true;
+		boolean possible = false ;
+		
+		// Pour toutes les colonnes
+		for ( int colonne = 0 ; colonne < 4 ; colonne++ )
+		{
+			// Pour toutes les cellules de la colonne de haut en bas
+			for( int ligne = 1 ; ligne < 4 ; ligne++ )
+			{
+				// On ne déplace pas les cases vides
+				if ( plateau.get(ligne).get(colonne) != 0 )
+				{
+					/* On décale la cellule vers le haut jusqu'à rencontrer un obstacle 
+					 * ( qui entraine un bloquage ou une fusion ) 
+					 */
+					int celluleHaut = ligne-1 ;
+
+					while ( celluleHaut >= 0 && plateau.get(celluleHaut).get(colonne) == 0 )
+					{
+						plateau.get(celluleHaut).set(colonne, plateau.get(celluleHaut+1).get(colonne));
+						plateau.get(celluleHaut+1).set(colonne, 0);
+						
+						celluleHaut--;
+						
+					}
+
+					/* Si la cellule n'est pas arrivé au bout, c'est parce qu'il a été bloqué
+					 * par une autre cellule. Dans ce cas, possibilité de fusion.
+					 */
+					if ( celluleHaut != -1 )
+					{
+						// Si les 2 sont égales, elles fusionnent
+						
+						if (plateau.get(celluleHaut).get(colonne) == plateau.get(celluleHaut+1).get(colonne) )
+						{
+							plateau.get(celluleHaut+1).set(colonne, 0);
+							plateau.get(celluleHaut).set(colonne, plateau.get(celluleHaut).get(colonne)*2);
+						}
+					}
+					
+					possible = true ;
+				}
+			}
+		}
+		
+		return possible ;
 	}
 	
+	/**
+	 * Toutes les cellules vont en bas. Si 2 cellules identique se rencontre,
+	 * elle fusionne et sa valeur double.
+	 * @return possible
+	 */
 	public boolean bas()
 	{
-		return true;
+		boolean possible = false ;
+		
+		// Pour toutes les colonnes
+		for ( int colonne = 0 ; colonne < 4 ; colonne++ )
+		{
+			// Pour toutes les cellules de la colonne de bas en haut
+			for( int ligne = 2 ; ligne >= 0 ; ligne-- )
+			{
+				// On ne déplace pas les cases vides
+				if ( plateau.get(ligne).get(colonne) != 0 )
+				{
+					/* On décale la cellule vers le bas jusqu'à rencontrer un obstacle 
+					 * ( qui entraine un bloquage ou une fusion ) 
+					 */
+					int celluleBas = ligne+1 ;
+
+					while ( celluleBas <= 3 && plateau.get(celluleBas).get(colonne) == 0 )
+					{
+						plateau.get(celluleBas).set(colonne, plateau.get(celluleBas-1).get(colonne));
+						plateau.get(celluleBas-1).set(colonne, 0);
+						
+						celluleBas++;
+						
+					}
+
+					/* Si la cellule n'est pas arrivé au bout, c'est parce qu'il a été bloqué
+					 * par une autre cellule. Dans ce cas, possibilité de fusion.
+					 */
+					if ( celluleBas != 4 )
+					{
+						// Si les 2 sont égales, elles fusionnent
+						
+						if (plateau.get(celluleBas).get(colonne) == plateau.get(celluleBas-1).get(colonne) )
+						{
+							plateau.get(celluleBas-1).set(colonne, 0);
+							plateau.get(celluleBas).set(colonne, plateau.get(celluleBas).get(colonne)*2);
+						}
+					}
+					
+					possible = true ;
+				}
+			}
+		}
+		
+		return possible ;
 	}
 	
 	
@@ -256,13 +352,13 @@ public class Plateau
 		Plateau p = new Plateau() ;
 		System.out.println(p);
 			
-		System.out.println(p.gauche()) ;
+		System.out.println(p.bas()) ;
 		System.out.println(p);
 		
-		System.out.println(p.gauche()) ;
+		System.out.println(p.bas()) ;
 		System.out.println(p);
 		
-		System.out.println(p.gauche()) ;
+		System.out.println(p.bas()) ;
 		System.out.println(p);
 	}
 
