@@ -2,6 +2,11 @@ package metier;
 
 import java.util.ArrayList;
 
+/**
+ * Classe métier du 2048
+ * @author Hichbra
+ *
+ */
 public class Plateau
 {
 	ArrayList<ArrayList<Integer>> plateau ;
@@ -27,40 +32,97 @@ public class Plateau
 			// On les cases à 0
 			for( int i = 0 ; i < 4 ; i++ )
 				ligne.add(0);
-		}
+		}	
 		
-		
-		
-		// Config Test 
-		plateau.get(0).set(0,2);
-		plateau.get(1).set(0,2);
-		plateau.get(2).set(0,2);
-		plateau.get(3).set(0,2);
-		
+		// bug gauche
+		plateau.get(0).set(0, 2048);
+		plateau.get(0).set(1, 1024);
+		plateau.get(0).set(2, 512);
+		plateau.get(0).set(3, 256);
+		plateau.get(1).set(0, 128);
+	
 	}
 	
 	/**
-	 * Initialise le jeu en mettant 2 nouveaux chiffres aleatoires.
+	 * Initialise le jeu en mettant 2 chiffres aleatoires sur le plateau.
 	 */
 	public void debut()
 	{
-		int posAleatoire 		= positionAleatoire() ;
-		int lignePosAleatoire 	= (int) Math.ceil(((double)posAleatoire)/4);// recupère la ligne du nombre tirée
-		int colPosAleatoire 	= posAleatoire%4 ;							// recupère la colonne du nombre tirée
-		// Si le nombre tiré est en fin de ligne
-		if ( colPosAleatoire == 0 )
-			colPosAleatoire = 4 ;
-
-		plateau.get(lignePosAleatoire-1).set(colPosAleatoire-1, tirageAleatoire());
+		// Reset du tableau
+		for( ArrayList<Integer> ligne : plateau ) // pour toutes les lignes
+			for( int i = 0 ; i < 4 ; i++ )
+				ligne.set(i, 0) ;
 		
-		posAleatoire 		= positionAleatoire() ;
-		lignePosAleatoire 	= (int) Math.ceil(((double)posAleatoire)/4);// recupère la ligne du nombre tirée
-		colPosAleatoire 	= posAleatoire%4 ;							// recupère la colonne du nombre tirée
-		// Si le nombre tiré est en fin de ligne
-		if ( colPosAleatoire == 0 )
-			colPosAleatoire = 4 ;
+		tourSuivant() ;
+		tourSuivant() ;
+	}
+	
+	
+	/**
+	 * Tire un nouveau nombre aleatoire et le met sur le plateau.
+	 * Si c'est impossible, la methode renvoie false.
+	 * @return possible
+	 */
+	public boolean tourSuivant()
+	{
+		int posAleatoire = positionAleatoire() ;
+		
+		if ( posAleatoire != -1 )
+		{
+			int lignePosAleatoire 	= (int) Math.ceil(((double)posAleatoire)/4);// recupère la ligne du nombre tirée
+			int colPosAleatoire 	= posAleatoire%4 ;							// recupère la colonne du nombre tirée
+			// Si le nombre tiré est en fin de ligne
+			if ( colPosAleatoire == 0 )
+				colPosAleatoire = 4 ;
+	
+			plateau.get(lignePosAleatoire-1).set(colPosAleatoire-1, tirageAleatoire());
+			
+			System.out.println(this);
+			// On regarde si le nombre apparu complete la grille
+			boolean dernierCoup = true ;
+			for ( ArrayList<Integer> ligne : plateau )
+				if( ligne.contains(0))
+					dernierCoup = false ;
+			
+			// si la grille est pleine
+			if (dernierCoup)
+			{
+				boolean finDuJeu = true ;
+						
+				for ( int ligne = 0 ; ligne < 4 ; ligne++ )
+				{
+					for ( int colonne = 0 ; colonne < 4 ; colonne++ )
+					{
+						// si on peut fusionner a Gauche
+						if ( colonne != 0 && plateau.get(ligne).get(colonne).intValue() == plateau.get(ligne).get(colonne-1).intValue() )
+							finDuJeu = false ; // Ce n'est pas fini
+						
+						// Ou a Droite
+						if ( colonne != 3 && plateau.get(ligne).get(colonne).intValue() == plateau.get(ligne).get(colonne+1).intValue() )
+							finDuJeu = false ; // Ce n'est pas fini
+						
+						// Ou en Haut
+						if ( ligne != 0 && plateau.get(ligne).get(colonne).intValue() == plateau.get(ligne-1).get(colonne).intValue() )
+							finDuJeu = false ; // Ce n'est pas fini
 
-		plateau.get(lignePosAleatoire-1).set(colPosAleatoire-1, tirageAleatoire());
+						// Ou en Bas
+						if ( ligne != 3 && plateau.get(ligne).get(colonne).intValue() == plateau.get(ligne+1).get(colonne).intValue() )
+							finDuJeu = false ; // Ce n'est pas fini
+						
+						System.out.println(finDuJeu);
+						if( ! finDuJeu )
+							break ;
+					}
+				}
+			
+				if ( finDuJeu )
+					return false ;
+			}
+					
+			return true ;
+		}
+		else
+			return false ;
 	}
 	
 	/**
@@ -136,10 +198,11 @@ public class Plateau
 					 * ( qui entraine un bloquage ou une fusion ) 
 					 */
 					int celluleGauche = cellule-1 ;
-					System.out.println("celluleGauche = "+celluleGauche);
 
 					while ( celluleGauche >= 0 && ligne.get(celluleGauche) == 0 )
 					{
+						possible = true ;
+
 						ligne.set(celluleGauche, ligne.get(celluleGauche+1)) ;
 						ligne.set(celluleGauche+1, 0) ;
 						
@@ -152,14 +215,15 @@ public class Plateau
 					if ( celluleGauche != -1 )
 					{
 						// Si les 2 sont égales, elles fusionnent
-						if (ligne.get(celluleGauche) == ligne.get(celluleGauche+1))
+						if (ligne.get(celluleGauche).intValue() == ligne.get(celluleGauche+1).intValue())
 						{
+							possible = true ;
+
 							ligne.set(celluleGauche+1, 0);
 							ligne.set(celluleGauche, ligne.get(celluleGauche)*2);
 						}
 					}
 					
-					possible = true ;
 
 				}
 			}
@@ -190,10 +254,11 @@ public class Plateau
 					 * ( qui entraine un bloquage ou une fusion ) 
 					 */
 					int celluleDroite = cellule+1 ;
-					System.out.println("celluleDroite = "+celluleDroite);
 
 					while ( celluleDroite <= 3 && ligne.get(celluleDroite) == 0 )
 					{
+						possible = true ;
+
 						ligne.set(celluleDroite, ligne.get(celluleDroite-1)) ;
 						ligne.set(celluleDroite-1, 0) ;
 						
@@ -207,15 +272,14 @@ public class Plateau
 					if ( celluleDroite != 4 )
 					{
 						// Si les 2 sont égales, elles fusionnent
-						if (ligne.get(celluleDroite-1) == ligne.get(celluleDroite))
+						if (ligne.get(celluleDroite-1).intValue() == ligne.get(celluleDroite).intValue())
 						{
+							possible = true ;
+
 							ligne.set(celluleDroite-1, 0);
 							ligne.set(celluleDroite, ligne.get(celluleDroite)*2);
 						}
 					}
-					
-					possible = true ;
-
 				}
 			}
 		}
@@ -248,6 +312,8 @@ public class Plateau
 
 					while ( celluleHaut >= 0 && plateau.get(celluleHaut).get(colonne) == 0 )
 					{
+						possible = true ;
+
 						plateau.get(celluleHaut).set(colonne, plateau.get(celluleHaut+1).get(colonne));
 						plateau.get(celluleHaut+1).set(colonne, 0);
 						
@@ -262,14 +328,15 @@ public class Plateau
 					{
 						// Si les 2 sont égales, elles fusionnent
 						
-						if (plateau.get(celluleHaut).get(colonne) == plateau.get(celluleHaut+1).get(colonne) )
+						if (plateau.get(celluleHaut).get(colonne).intValue() == plateau.get(celluleHaut+1).get(colonne).intValue() )
 						{
+							possible = true ;
+
 							plateau.get(celluleHaut+1).set(colonne, 0);
 							plateau.get(celluleHaut).set(colonne, plateau.get(celluleHaut).get(colonne)*2);
 						}
 					}
 					
-					possible = true ;
 				}
 			}
 		}
@@ -302,6 +369,8 @@ public class Plateau
 
 					while ( celluleBas <= 3 && plateau.get(celluleBas).get(colonne) == 0 )
 					{
+						possible = true ;
+
 						plateau.get(celluleBas).set(colonne, plateau.get(celluleBas-1).get(colonne));
 						plateau.get(celluleBas-1).set(colonne, 0);
 						
@@ -316,14 +385,14 @@ public class Plateau
 					{
 						// Si les 2 sont égales, elles fusionnent
 						
-						if (plateau.get(celluleBas).get(colonne) == plateau.get(celluleBas-1).get(colonne) )
+						if (plateau.get(celluleBas).get(colonne).intValue() == plateau.get(celluleBas-1).get(colonne).intValue() )
 						{
+							possible = true ;
+
 							plateau.get(celluleBas-1).set(colonne, 0);
 							plateau.get(celluleBas).set(colonne, plateau.get(celluleBas).get(colonne)*2);
 						}
 					}
-					
-					possible = true ;
 				}
 			}
 		}
@@ -331,6 +400,21 @@ public class Plateau
 		return possible ;
 	}
 	
+	/**
+	 * Retourne un tableau contenant la valeur des cases du plateau 
+	 * @return cellules
+	 */
+	public ArrayList<Integer> getCellules()
+	{
+		ArrayList<Integer> cellules = new ArrayList<Integer>() ;
+		
+		for ( ArrayList<Integer> ligne : plateau )
+			for ( int cellule : ligne )
+				cellules.add(cellule);
+		
+		return cellules ;
+		
+	}
 	
 	public String toString()
 	{
@@ -347,19 +431,20 @@ public class Plateau
 		return s ;
 	}
 	
+	/*
 	public static void main(String[] args)
 	{
 		Plateau p = new Plateau() ;
 		System.out.println(p);
 			
-		System.out.println(p.bas()) ;
+		System.out.println("mouvement possible : "+p.droite()) ;
 		System.out.println(p);
 		
-		System.out.println(p.bas()) ;
+		System.out.println("mouvement possible : "+p.droite()) ;
 		System.out.println(p);
 		
-		System.out.println(p.bas()) ;
+		System.out.println("mouvement possible : "+p.droite()) ;
 		System.out.println(p);
 	}
-
+	*/
 }
