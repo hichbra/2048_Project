@@ -35,11 +35,11 @@ public class Plateau
 		}	
 		
 		// bug gauche
-		plateau.get(0).set(0, 2048);
+		/*plateau.get(0).set(0, 2048);
 		plateau.get(0).set(1, 1024);
 		plateau.get(0).set(2, 512);
 		plateau.get(0).set(3, 256);
-		plateau.get(1).set(0, 128);
+		plateau.get(1).set(0, 128);*/
 	
 	}
 	

@@ -28,7 +28,7 @@ public class Controleur extends JFrame
 		this.addKeyListener(new ControleurListener());
 		
 		this.plateau = new Plateau();
-		//this.plateau.debut();
+		this.plateau.debut();
 		
 		this.labelCellules = new ArrayList<JLabel>();
 		
@@ -135,20 +135,7 @@ public class Controleur extends JFrame
 	 */
 	class ControleurListener implements KeyListener
 	{
-		@Override
-		public void keyPressed(KeyEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void keyTyped(KeyEvent e) 
+		public void keyPressed(KeyEvent e)
 		{
 			if ( e.getKeyCode() == KeyEvent.VK_LEFT || Character.toUpperCase(e.getKeyChar()) == 'Q' )
 			{
@@ -177,6 +164,10 @@ public class Controleur extends JFrame
 			actualiser();
 
 		}
+
+		public void keyReleased(KeyEvent e) {}
+
+		public void keyTyped(KeyEvent e) {}
 
 	}
 
