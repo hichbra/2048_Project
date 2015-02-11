@@ -1,6 +1,7 @@
 package metier;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Classe métier du 2048
@@ -22,6 +23,84 @@ public class Plateau
 		initPlateau();
 	}
 	
+	/**
+	 * Lance la partie en mode Console
+	 */
+	public void modeConsole()
+	{
+		debut();
+		Scanner scanner = new Scanner(System.in);
+		
+		boolean finDuJeu = false ;
+		while ( ! finDuJeu )
+		{
+			System.out.println("\nMouvement\n");
+            System.out.println("(Z) - Haut");
+            System.out.println("(Q) - Gauche");
+            System.out.println("(S) - Bas");
+            System.out.println("(D) - Droite");
+            System.out.println("Votre Action:\t");
+
+			String mouvement = scanner.nextLine();
+			
+			if ( mouvement.equals("Q") )
+			{
+				if ( gauche() ) // si le mouvement est possible, on passe au tour suivant
+					if ( ! tourSuivant() ) // Si on ne peut pas passer au tour suivant, le jeu est terminé
+						finDuJeu = finDuJeuModeConsole();
+			}
+			else if ( mouvement.equals("D") )
+			{
+				if ( droite() )
+					if ( ! tourSuivant() )
+						finDuJeu = finDuJeuModeConsole();
+			}
+			else if ( mouvement.equals("Z") )
+			{
+				if ( haut() )
+					if ( ! tourSuivant() ) 
+						finDuJeu = finDuJeuModeConsole();
+			}
+			else if ( mouvement.equals("S") )
+			{
+				if ( bas() )
+					if ( ! tourSuivant() ) 
+						finDuJeu = finDuJeuModeConsole();
+			}
+			else
+			{
+				System.out.println("Cette commande n'existe pas ! Veuillez réessayer !\n");
+			}
+			
+		}
+		
+		scanner.close();
+	}
+	
+	/**
+	 * Permet de Quitter ou de Recommencer à la fin d'une partie
+	 * @return recommencer
+	 */
+	private boolean finDuJeuModeConsole() 
+	{
+		System.out.println("\nFin du Jeu !\n");
+        System.out.println("(R) - Recommencer");
+        System.out.println("Autre - Quitter");
+        
+		Scanner scanner = new Scanner(System.in);
+		String choix = scanner.nextLine();
+		scanner.close();
+		
+		if(choix.equals("R"))
+		{
+			this.debut();
+			return false ;
+		}
+		else
+			return true ;
+
+	}
+
 	/**
 	 * Initialisation du tableau à 0
 	 */
@@ -109,11 +188,11 @@ public class Plateau
 						if ( ligne != 3 && plateau.get(ligne).get(colonne).intValue() == plateau.get(ligne+1).get(colonne).intValue() )
 							finDuJeu = false ; // Ce n'est pas fini
 						
-						System.out.println(finDuJeu);
 						if( ! finDuJeu )
 							break ;
 					}
 				}
+				System.out.println("Fin du jeu = "+finDuJeu);
 			
 				if ( finDuJeu )
 					return false ;
@@ -431,20 +510,4 @@ public class Plateau
 		return s ;
 	}
 	
-	/*
-	public static void main(String[] args)
-	{
-		Plateau p = new Plateau() ;
-		System.out.println(p);
-			
-		System.out.println("mouvement possible : "+p.droite()) ;
-		System.out.println(p);
-		
-		System.out.println("mouvement possible : "+p.droite()) ;
-		System.out.println(p);
-		
-		System.out.println("mouvement possible : "+p.droite()) ;
-		System.out.println(p);
-	}
-	*/
 }

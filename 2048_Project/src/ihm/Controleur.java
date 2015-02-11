@@ -24,11 +24,12 @@ public class Controleur extends JFrame
 	public Controleur()
 	{
 		super("2048_Project");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.addKeyListener(new ControleurListener());
 		
 		this.plateau = new Plateau();
 		this.plateau.debut();
+				
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.addKeyListener(new ControleurListener());
 		
 		this.labelCellules = new ArrayList<JLabel>();
 		
@@ -55,6 +56,7 @@ public class Controleur extends JFrame
 		
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+		
 	}
 	
 	/**
@@ -190,6 +192,9 @@ public class Controleur extends JFrame
 		
 	}
 	
+	/**
+	 * Permet de Quitter ou de Recommencer à la fin d'une partie
+	 */
 	public void finDuJeu() 
 	{
 		actualiser();
@@ -209,8 +214,16 @@ public class Controleur extends JFrame
 
 	public static void main(String[] args)
 	{
-		// TODO Auto-generated method stub
-		new Controleur() ;
+		if ( args.length == 0 )
+			new Controleur() ;
+		else if ( args[0].equals("-c"))
+		{
+			Plateau p = new Plateau() ;
+			p.modeConsole();			
+		}
+		else
+			System.out.println("Cette Argument n'existe pas.\nUsage:\t-c = Mode Console");
+		
 	}
 
 
