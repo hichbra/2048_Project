@@ -1,6 +1,7 @@
 package metier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -10,15 +11,11 @@ import java.util.Scanner;
  */
 public class Plateau
 {
-	ArrayList<ArrayList<Integer>> plateau ;
+	int[][] plateau ;
 	
 	public Plateau()
 	{
-		this.plateau = new ArrayList<ArrayList<Integer>>();
-		
-		// Creation des lignes du plateau
-		for( int i = 0 ; i < 4 ; i++ )
-			this.plateau.add(new ArrayList<Integer>());
+		this.plateau = new int[4][4];
 		
 		initPlateau();
 	}
@@ -106,11 +103,11 @@ public class Plateau
 	 */
 	private void initPlateau()
 	{
-		for( ArrayList<Integer> ligne : plateau ) // pour toutes les lignes
+		for( int[] ligne : plateau ) // pour toutes les lignes
 		{
-			// On les cases à 0
+			// On met les cases à 0
 			for( int i = 0 ; i < 4 ; i++ )
-				ligne.add(0);
+				ligne[i] = 0;
 		}	
 		
 		// bug gauche
@@ -128,9 +125,7 @@ public class Plateau
 	public void debut()
 	{
 		// Reset du tableau
-		for( ArrayList<Integer> ligne : plateau ) // pour toutes les lignes
-			for( int i = 0 ; i < 4 ; i++ )
-				ligne.set(i, 0) ;
+		initPlateau() ;
 		
 		tourSuivant() ;
 		tourSuivant() ;
@@ -154,13 +149,13 @@ public class Plateau
 			if ( colPosAleatoire == 0 )
 				colPosAleatoire = 4 ;
 	
-			plateau.get(lignePosAleatoire-1).set(colPosAleatoire-1, tirageAleatoire());
+			plateau[lignePosAleatoire-1][colPosAleatoire-1] = tirageAleatoire();
 			
 			System.out.println(this);
 			// On regarde si le nombre apparu complete la grille
 			boolean dernierCoup = true ;
-			for ( ArrayList<Integer> ligne : plateau )
-				if( ligne.contains(0))
+			for ( int[] ligne : plateau )
+				if( Arrays.asList(ligne).contains(0))
 					dernierCoup = false ;
 			
 			// si la grille est pleine
@@ -173,19 +168,19 @@ public class Plateau
 					for ( int colonne = 0 ; colonne < 4 ; colonne++ )
 					{
 						// si on peut fusionner a Gauche
-						if ( colonne != 0 && plateau.get(ligne).get(colonne).intValue() == plateau.get(ligne).get(colonne-1).intValue() )
+						if ( colonne != 0 && plateau[ligne][colonne] == plateau[ligne][colonne-1] )
 							finDuJeu = false ; // Ce n'est pas fini
 						
 						// Ou a Droite
-						if ( colonne != 3 && plateau.get(ligne).get(colonne).intValue() == plateau.get(ligne).get(colonne+1).intValue() )
+						if ( colonne != 3 && plateau[ligne][colonne] == plateau[ligne][colonne+1] )
 							finDuJeu = false ; // Ce n'est pas fini
 						
 						// Ou en Haut
-						if ( ligne != 0 && plateau.get(ligne).get(colonne).intValue() == plateau.get(ligne-1).get(colonne).intValue() )
+						if ( ligne != 0 && plateau[ligne][colonne] == plateau[ligne-1][colonne] )
 							finDuJeu = false ; // Ce n'est pas fini
 
 						// Ou en Bas
-						if ( ligne != 3 && plateau.get(ligne).get(colonne).intValue() == plateau.get(ligne+1).get(colonne).intValue() )
+						if ( ligne != 3 && plateau[ligne][colonne]== plateau[ligne+1][colonne] )
 							finDuJeu = false ; // Ce n'est pas fini
 						
 						if( ! finDuJeu )
@@ -231,7 +226,7 @@ public class Plateau
 		
 		// On ajoute les cases inoccupée dans l'arraylist pour tirer le numero parmis elles
 		int numCellule = 1 ;
-		for ( ArrayList<Integer> ligne : plateau )
+		for ( int[] ligne : plateau )
 		{
 			for ( int cellule : ligne )
 			{
@@ -265,25 +260,25 @@ public class Plateau
 		boolean possible = false ;
 		
 		// Pour toutes les lignes
-		for ( ArrayList<Integer> ligne : plateau )
+		for ( int[] ligne : plateau )
 		{
 			// Pour toutes les cellules de la ligne de gauche à droite
 			for ( int cellule = 1 ; cellule <= 3 ; cellule++ )
 			{
 				// On ne déplace pas les cases vides
-				if ( ligne.get(cellule) != 0 )
+				if ( ligne[cellule] != 0 )
 				{
 					/* On décale la cellule vers la gauche jusqu'à rencontrer un obstacle 
 					 * ( qui entraine un bloquage ou une fusion ) 
 					 */
 					int celluleGauche = cellule-1 ;
 
-					while ( celluleGauche >= 0 && ligne.get(celluleGauche) == 0 )
+					while ( celluleGauche >= 0 && ligne[celluleGauche] == 0 )
 					{
 						possible = true ;
 
-						ligne.set(celluleGauche, ligne.get(celluleGauche+1)) ;
-						ligne.set(celluleGauche+1, 0) ;
+						ligne[celluleGauche] = ligne[celluleGauche+1] ;
+						ligne[celluleGauche+1] = 0 ;
 						
 						celluleGauche--;
 					}
@@ -294,12 +289,12 @@ public class Plateau
 					if ( celluleGauche != -1 )
 					{
 						// Si les 2 sont égales, elles fusionnent
-						if (ligne.get(celluleGauche).intValue() == ligne.get(celluleGauche+1).intValue())
+						if (ligne[celluleGauche] == ligne[celluleGauche+1])
 						{
 							possible = true ;
 
-							ligne.set(celluleGauche+1, 0);
-							ligne.set(celluleGauche, ligne.get(celluleGauche)*2);
+							ligne[celluleGauche+1] = 0;
+							ligne[celluleGauche] = ligne[celluleGauche]*2;
 						}
 					}
 					
@@ -321,25 +316,25 @@ public class Plateau
 		boolean possible = false ;
 		
 		// Pour toutes les lignes
-		for ( ArrayList<Integer> ligne : plateau )
+		for ( int[] ligne : plateau )
 		{
 			// Pour toutes les cellules de la ligne de droite à gauche
 			for ( int cellule = 2 ; cellule >= 0 ; cellule-- )
 			{
 				// On ne déplace pas les cases vides
-				if ( ligne.get(cellule) != 0 )
+				if ( ligne[cellule] != 0 )
 				{
 					/* On décale la cellule vers la droite jusqu'à rencontrer un obstacle 
 					 * ( qui entraine un bloquage ou une fusion ) 
 					 */
 					int celluleDroite = cellule+1 ;
 
-					while ( celluleDroite <= 3 && ligne.get(celluleDroite) == 0 )
+					while ( celluleDroite <= 3 && ligne[celluleDroite] == 0 )
 					{
 						possible = true ;
 
-						ligne.set(celluleDroite, ligne.get(celluleDroite-1)) ;
-						ligne.set(celluleDroite-1, 0) ;
+						ligne[celluleDroite] = ligne[celluleDroite-1] ;
+						ligne[celluleDroite-1] = 0 ;
 						
 						celluleDroite++;
 						
@@ -351,12 +346,12 @@ public class Plateau
 					if ( celluleDroite != 4 )
 					{
 						// Si les 2 sont égales, elles fusionnent
-						if (ligne.get(celluleDroite-1).intValue() == ligne.get(celluleDroite).intValue())
+						if (ligne[celluleDroite-1] == ligne[celluleDroite])
 						{
 							possible = true ;
 
-							ligne.set(celluleDroite-1, 0);
-							ligne.set(celluleDroite, ligne.get(celluleDroite)*2);
+							ligne[celluleDroite-1] = 0;
+							ligne[celluleDroite] = ligne[celluleDroite]*2;
 						}
 					}
 				}
@@ -382,19 +377,19 @@ public class Plateau
 			for( int ligne = 1 ; ligne < 4 ; ligne++ )
 			{
 				// On ne déplace pas les cases vides
-				if ( plateau.get(ligne).get(colonne) != 0 )
+				if ( plateau[ligne][colonne] != 0 )
 				{
 					/* On décale la cellule vers le haut jusqu'à rencontrer un obstacle 
 					 * ( qui entraine un bloquage ou une fusion ) 
 					 */
 					int celluleHaut = ligne-1 ;
 
-					while ( celluleHaut >= 0 && plateau.get(celluleHaut).get(colonne) == 0 )
+					while ( celluleHaut >= 0 && plateau[celluleHaut][colonne] == 0 )
 					{
 						possible = true ;
 
-						plateau.get(celluleHaut).set(colonne, plateau.get(celluleHaut+1).get(colonne));
-						plateau.get(celluleHaut+1).set(colonne, 0);
+						plateau[celluleHaut][colonne] = plateau[celluleHaut+1][colonne];
+						plateau[celluleHaut+1][colonne] = 0;
 						
 						celluleHaut--;
 						
@@ -407,12 +402,12 @@ public class Plateau
 					{
 						// Si les 2 sont égales, elles fusionnent
 						
-						if (plateau.get(celluleHaut).get(colonne).intValue() == plateau.get(celluleHaut+1).get(colonne).intValue() )
+						if (plateau[celluleHaut][colonne] == plateau[celluleHaut+1][colonne] )
 						{
 							possible = true ;
 
-							plateau.get(celluleHaut+1).set(colonne, 0);
-							plateau.get(celluleHaut).set(colonne, plateau.get(celluleHaut).get(colonne)*2);
+							plateau[celluleHaut+1][colonne] = 0;
+							plateau[celluleHaut][colonne] = plateau[celluleHaut][colonne]*2;
 						}
 					}
 					
@@ -439,19 +434,19 @@ public class Plateau
 			for( int ligne = 2 ; ligne >= 0 ; ligne-- )
 			{
 				// On ne déplace pas les cases vides
-				if ( plateau.get(ligne).get(colonne) != 0 )
+				if ( plateau[ligne][colonne] != 0 )
 				{
 					/* On décale la cellule vers le bas jusqu'à rencontrer un obstacle 
 					 * ( qui entraine un bloquage ou une fusion ) 
 					 */
 					int celluleBas = ligne+1 ;
 
-					while ( celluleBas <= 3 && plateau.get(celluleBas).get(colonne) == 0 )
+					while ( celluleBas <= 3 && plateau[celluleBas][colonne] == 0 )
 					{
 						possible = true ;
 
-						plateau.get(celluleBas).set(colonne, plateau.get(celluleBas-1).get(colonne));
-						plateau.get(celluleBas-1).set(colonne, 0);
+						plateau[celluleBas][colonne] = plateau[celluleBas-1][colonne];
+						plateau[celluleBas-1][colonne] = 0;
 						
 						celluleBas++;
 						
@@ -464,12 +459,12 @@ public class Plateau
 					{
 						// Si les 2 sont égales, elles fusionnent
 						
-						if (plateau.get(celluleBas).get(colonne).intValue() == plateau.get(celluleBas-1).get(colonne).intValue() )
+						if (plateau[celluleBas][colonne] == plateau[celluleBas-1][colonne] )
 						{
 							possible = true ;
 
-							plateau.get(celluleBas-1).set(colonne, 0);
-							plateau.get(celluleBas).set(colonne, plateau.get(celluleBas).get(colonne)*2);
+							plateau[celluleBas-1][colonne] = 0;
+							plateau[celluleBas][colonne] = plateau[celluleBas][colonne]*2;
 						}
 					}
 				}
@@ -487,7 +482,7 @@ public class Plateau
 	{
 		ArrayList<Integer> cellules = new ArrayList<Integer>() ;
 		
-		for ( ArrayList<Integer> ligne : plateau )
+		for ( int[] ligne : plateau )
 			for ( int cellule : ligne )
 				cellules.add(cellule);
 		
@@ -499,7 +494,7 @@ public class Plateau
 	{
 		String s = "" ;
 		
-		for( ArrayList<Integer> ligne : plateau ) // pour toutes les lignes
+		for( int[] ligne : plateau ) // pour toutes les lignes
 		{
 			for ( int cellule : ligne ) // pour toutes les cellules de la ligne
 				s += cellule+" ";
