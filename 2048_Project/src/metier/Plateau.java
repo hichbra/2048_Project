@@ -1,7 +1,6 @@
 package metier;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -154,10 +153,9 @@ public class Plateau
 			System.out.println(this);
 			// On regarde si le nombre apparu complete la grille
 			boolean dernierCoup = true ;
-			for ( int[] ligne : plateau )
-				if( Arrays.asList(ligne).contains(0))
-					dernierCoup = false ;
-			
+			if(plateauContient(0))
+				dernierCoup = false ;
+		
 			// si la grille est pleine
 			if (dernierCoup)
 			{
@@ -199,6 +197,22 @@ public class Plateau
 			return false ;
 	}
 	
+	/**
+	 * Teste si le plateau contient le nombre passé en argument
+	 * @param ligne
+	 * @param i
+	 * @return contient
+	 */
+	private boolean plateauContient(int i) 
+	{
+		for(int[] ligne: plateau)
+			for(int cellule : ligne)
+				if ( cellule == i )
+					return true ;
+		
+		return false;
+	}
+
 	/**
 	 * Tire un nouveau nombre aleatoire à mettre dans le plateau.
 	 * 90% de chance de tomber sur un 2.
@@ -504,5 +518,4 @@ public class Plateau
 		
 		return s ;
 	}
-	
 }
