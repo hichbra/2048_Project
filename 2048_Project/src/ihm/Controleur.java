@@ -13,11 +13,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import metier.Expectimax;
 import metier.Plateau;
 
 @SuppressWarnings("serial")
 public class Controleur extends JFrame
 {
+	private Expectimax expectimax ;
 	private Plateau plateau ;
 	private ArrayList<JLabel> labelCellules ;
 	
@@ -27,6 +29,8 @@ public class Controleur extends JFrame
 		
 		this.plateau = new Plateau();
 		this.plateau.debut();
+		
+		this.expectimax = new Expectimax(plateau);
 				
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.addKeyListener(new ControleurListener());
@@ -57,8 +61,47 @@ public class Controleur extends JFrame
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 		
+		lancerExpectimax();
+		
 	}
 	
+	private void lancerExpectimax() 
+	{
+		// Expectimax
+		boolean fin = false ;
+		while(!fin) // Tant que l'on peut jouer
+		{
+			int dir = (int)expectimax.expectimax(new Plateau(plateau), 4)[0];
+
+			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
+			switch(dir)
+			{
+				case 1:
+					plateau.gauche();
+					break;
+				case 2:
+					plateau.droite();
+					break;
+				case 3:
+					plateau.haut();
+					break;
+				case 4:
+					plateau.bas();
+					break;
+				default:
+					break;
+			}
+
+			if ( ! plateau.tourSuivant() )
+			{
+				fin = true ;
+				finDuJeu();
+			}
+			
+			actualiser();
+		}
+	}
+
 	/**
 	 * Donne l'apparence du label
 	 * @param lab
@@ -199,18 +242,30 @@ public class Controleur extends JFrame
 	{
 		actualiser();
 		
-		String[] options = {"Recommencer","Quitter"};
-		int choix = JOptionPane.showOptionDialog(null,  "C'est terminé", "Fin du Jeu", JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, "Recommencer") ;
+		int scoreMax = 0 ;
+		for ( int val : plateau.getCellules())
+			if (val > scoreMax) 
+				scoreMax = val ;
+			
+		String[] options = {"Recommencer", "Expectimax", "Quitter"};
+		int choix = JOptionPane.showOptionDialog(null,  "C'est terminé. Score Max: "+scoreMax, "Fin du Jeu", JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, "Recommencer") ;
 	
 		if(choix == 0 )
 		{
 			this.plateau.debut();
 			actualiser();
 		}
+		else if ( choix == 1 )
+		{
+			this.plateau.debut();
+			actualiser();
+			lancerExpectimax();
+		}
 		else
 			System.exit(0);
 
 	}
+	
 
 	public static void main(String[] args)
 	{

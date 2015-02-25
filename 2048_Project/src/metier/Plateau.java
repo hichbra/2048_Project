@@ -19,6 +19,20 @@ public class Plateau
 		initPlateau();
 	}
 	
+	public Plateau(Plateau p)
+	{
+		this.plateau = new int[4][4] ;
+		
+		for( int ligne = 0 ; ligne < p.plateau.length ; ligne++)
+		{
+			int[] nouvelleLigne = new int[4];
+			for ( int colonne = 0 ; colonne < p.plateau[0].length ; colonne++)
+				nouvelleLigne[colonne] = p.plateau[ligne][colonne];
+			
+			plateau[ligne] = nouvelleLigne ;	
+		}
+	}
+	
 	/**
 	 * Lance la partie en mode Console
 	 */
@@ -115,7 +129,20 @@ public class Plateau
 		plateau.get(0).set(2, 512);
 		plateau.get(0).set(3, 256);
 		plateau.get(1).set(0, 128);*/
+	}
 	
+	/**
+	 * Rempli un tableau de test
+	 */
+	public void plateauTest()
+	{
+		initPlateau();
+		
+		plateau[0][0] = 0 ;
+		plateau[0][1] = 128 ;
+		plateau[0][2] = 256 ;
+		plateau[0][3] = 512 ;
+		
 	}
 	
 	/**
@@ -236,20 +263,9 @@ public class Plateau
 	 */
 	private int positionAleatoire()
 	{
-		ArrayList<Integer> caseLibre = new ArrayList<Integer>();
-		
-		// On ajoute les cases inoccupée dans l'arraylist pour tirer le numero parmis elles
-		int numCellule = 1 ;
-		for ( int[] ligne : plateau )
-		{
-			for ( int cellule : ligne )
-			{
-				if ( cellule == 0 )
-					caseLibre.add(numCellule);
-				
-				numCellule++ ;
-			}
-		}
+		// On veut tirer le numero parmis les cases inoccupée, on commence donc par les récupérés
+		ArrayList<Integer> caseLibre = positionLibres();
+	
 		
 		// Tirage d'une cellule libre dans le tableau
 		if (! caseLibre.isEmpty() )
@@ -262,6 +278,47 @@ public class Plateau
 		else
 			return -1;
 
+	}
+	
+	/**
+	 * Met le nombre entré ( 2 ou 4 ) en parametre sur le plateau à la position entré en deuxieme parametre.
+	 * Si c'est impossible, la methode renvoie false.
+	 * @return possible
+	 */
+	public void tourSuivantPrevu(int nombre, int position)
+	{
+		int lignePosAleatoire 	= (int) Math.ceil(((double)position)/4);// recupère la ligne du nombre 
+		int colPosAleatoire 	= position%4 ;							// recupère la colonne du nombre 
+		// Si le nombre est en fin de ligne
+		if ( colPosAleatoire == 0 )
+			colPosAleatoire = 4 ;
+
+		plateau[lignePosAleatoire-1][colPosAleatoire-1] = nombre ;
+		
+		//System.out.println(this);
+	}
+	
+	/**
+	 * Renvoie la libre des cases inoccupée ( case numéroté de 1 à 16 )
+	 * @return caseLibre
+	 */
+	public ArrayList<Integer> positionLibres()
+	{
+		ArrayList<Integer> caseLibre = new ArrayList<Integer>();
+		
+		int numCellule = 1 ;
+		for ( int[] ligne : plateau )
+		{
+			for ( int cellule : ligne )
+			{
+				if ( cellule == 0 )
+					caseLibre.add(numCellule);
+				
+				numCellule++ ;
+			}
+		}
+		
+		return caseLibre ;
 	}
 	
 	/**
@@ -504,6 +561,11 @@ public class Plateau
 		
 	}
 	
+	public int[][] getPlateau()
+	{
+		return this.plateau;
+	}
+	
 	public String toString()
 	{
 		String s = "" ;
@@ -518,4 +580,6 @@ public class Plateau
 		
 		return s ;
 	}
+	
+	
 }
