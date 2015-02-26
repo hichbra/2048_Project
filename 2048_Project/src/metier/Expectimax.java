@@ -40,9 +40,7 @@ public class Expectimax
 				default:
 					break;
 			}
-			
-			System.out.println("Direction:"+direction+" Possible: "+directionPossible);
-			
+						
 			if ( directionPossible )
 			{
 				double score = eval(grilleCopie, profondeur-1) ;
@@ -55,7 +53,6 @@ public class Expectimax
 			}
 		}
 		
-		System.out.println("MeilleurDir = "+meilleurDir);
 		double[] result = {meilleurDir, scoreMax} ;
 		return result;
 	}
