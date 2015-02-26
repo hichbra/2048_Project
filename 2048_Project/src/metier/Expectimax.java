@@ -13,7 +13,7 @@ public class Expectimax
 	public double[] expectimax(Plateau grille, int profondeur)
 	{
 		//System.out.println("Expectimax profondeur: "+profondeur);
-		double scoreMax = -1 ;
+		double scoreMax = -999999 ;
 		int meilleurDir = 0 ;
 		
 		for ( int direction = 1 ; direction <= 4 ; direction++ )
@@ -41,6 +41,8 @@ public class Expectimax
 					break;
 			}
 			
+			System.out.println("Direction:"+direction+" Possible: "+directionPossible);
+			
 			if ( directionPossible )
 			{
 				double score = eval(grilleCopie, profondeur-1) ;
@@ -53,6 +55,7 @@ public class Expectimax
 			}
 		}
 		
+		System.out.println("MeilleurDir = "+meilleurDir);
 		double[] result = {meilleurDir, scoreMax} ;
 		return result;
 	}
@@ -71,7 +74,7 @@ public class Expectimax
 			Plateau grilleCopie = new Plateau(grille);
 			grilleCopie.tourSuivantPrevu(2, emplacement) ;
 			
-			// calcul du score de la grille en ponderant le score avec la probabilité d'avoir un 2
+			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 2
 			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie) ) * (9.0/10.0) ;
 			
 			// calcul du score des autres grilles
@@ -86,7 +89,7 @@ public class Expectimax
 			Plateau grilleCopie = new Plateau(grille);
 			grilleCopie.tourSuivantPrevu(4, emplacement) ;
 			
-			// calcul du score de la grille en ponderant le score avec la probabilité d'avoir un 4
+			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 4
 			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie) ) * (1.0/10.0) ;
 			
 			// calcul du score des autres grilles

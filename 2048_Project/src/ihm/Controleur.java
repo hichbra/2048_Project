@@ -69,36 +69,42 @@ public class Controleur extends JFrame
 	{
 		// Expectimax
 		boolean fin = false ;
+		boolean mouvPossible = true ;
 		while(!fin) // Tant que l'on peut jouer
 		{
-			int dir = (int)expectimax.expectimax(new Plateau(plateau), 4)[0];
+			int dir = (int)expectimax.expectimax(new Plateau(plateau), 2)[0];
 
 			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			switch(dir)
 			{
 				case 1:
-					plateau.gauche();
+					mouvPossible = plateau.gauche();
 					break;
 				case 2:
-					plateau.droite();
+					mouvPossible = plateau.droite();
 					break;
 				case 3:
-					plateau.haut();
+					mouvPossible = plateau.haut();
 					break;
 				case 4:
-					plateau.bas();
+					mouvPossible = plateau.bas();
 					break;
 				default:
+					mouvPossible = false ;
 					break;
 			}
 
-			if ( ! plateau.tourSuivant() )
+			actualiser();
+			
+			if ( mouvPossible )
 			{
-				fin = true ;
-				finDuJeu();
+				if ( ! plateau.tourSuivant()  )
+				{
+					fin = true ;
+					finDuJeu();
+				}
 			}
 			
-			actualiser();
 		}
 	}
 
@@ -185,7 +191,7 @@ public class Controleur extends JFrame
 			if ( e.getKeyCode() == KeyEvent.VK_LEFT || Character.toUpperCase(e.getKeyChar()) == 'Q' )
 			{
 				if ( plateau.gauche() ) // si le mouvement est possible, on passe au tour suivant
-					if ( ! plateau.tourSuivant() ) // Si on ne peut pas passer au tour suivant, le jeu est terminé
+					if ( ! plateau.tourSuivant() ) // Si on ne peut pas passer au tour suivant, le jeu est terminï¿½
 						finDuJeu();
 			}
 			else if ( e.getKeyCode() == KeyEvent.VK_RIGHT || Character.toUpperCase(e.getKeyChar()) == 'D' )
@@ -236,7 +242,7 @@ public class Controleur extends JFrame
 	}
 	
 	/**
-	 * Permet de Quitter ou de Recommencer à la fin d'une partie
+	 * Permet de Quitter ou de Recommencer ï¿½ la fin d'une partie
 	 */
 	public void finDuJeu() 
 	{
@@ -248,7 +254,7 @@ public class Controleur extends JFrame
 				scoreMax = val ;
 			
 		String[] options = {"Recommencer", "Expectimax", "Quitter"};
-		int choix = JOptionPane.showOptionDialog(null,  "C'est terminé. Score Max: "+scoreMax, "Fin du Jeu", JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, "Recommencer") ;
+		int choix = JOptionPane.showOptionDialog(null,  "C'est terminï¿½. Score Max: "+scoreMax, "Fin du Jeu", JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, "Recommencer") ;
 	
 		if(choix == 0 )
 		{
