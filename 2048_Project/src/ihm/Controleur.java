@@ -94,8 +94,6 @@ public class Controleur extends JFrame
 					break;
 			}
 
-			actualiser();
-			
 			if ( mouvPossible )
 			{
 				if ( ! plateau.tourSuivant()  )
@@ -105,6 +103,7 @@ public class Controleur extends JFrame
 				}
 			}
 			
+			actualiser();
 		}
 	}
 
