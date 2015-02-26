@@ -134,15 +134,32 @@ public class Plateau
 	/**
 	 * Rempli un tableau de test
 	 */
-	public void plateauTest()
+	public void plateauTest(int num)
 	{
 		initPlateau();
 		
-		plateau[0][0] = 0 ;
-		plateau[0][1] = 128 ;
-		plateau[0][2] = 256 ;
-		plateau[0][3] = 512 ;
-		
+		if ( num == 1 )
+		{
+			plateau[0][0] = 0 ;
+			plateau[0][1] = 128 ;
+			plateau[0][2] = 256 ;
+			plateau[0][3] = 512 ;
+		}
+		else if ( num == 2 )
+		{
+			plateau[0][0] = 0 ;
+			plateau[0][1] = 128 ;
+			plateau[0][2] = 256 ;
+			plateau[0][3] = 512 ;
+			plateau[1][0] = 0 ;
+			plateau[1][1] = 128 ;
+			plateau[1][2] = 256 ;
+			plateau[1][3] = 512 ;
+			plateau[2][0] = 0 ;
+			plateau[2][1] = 128 ;
+			plateau[2][2] = 256 ;
+			plateau[2][3] = 512 ;
+		}
 	}
 	
 	/**

@@ -1,15 +1,15 @@
 package metier;
 
+
 public class Expectimax 
 {
 	private Plateau plateau ;
-	
+
 	public Expectimax(Plateau plateau)
 	{
 		this.plateau = plateau ;
 	}
 	
-
 	public double[] expectimax(Plateau grille, int profondeur)
 	{
 		//System.out.println("Expectimax profondeur: "+profondeur);
@@ -44,7 +44,7 @@ public class Expectimax
 			if ( directionPossible )
 			{
 				double score = eval(grilleCopie, profondeur-1) ;
-				
+						
 				if ( score > scoreMax )
 				{
 					scoreMax = score;
@@ -72,7 +72,7 @@ public class Expectimax
 			grilleCopie.tourSuivantPrevu(2, emplacement) ;
 			
 			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 2
-			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie) ) * (9.0/10.0) ;
+			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie)+regle5(grilleCopie) ) * (9.0/10.0) ;
 			
 			// calcul du score des autres grilles
 			if ( profondeur > 0 )
@@ -87,7 +87,7 @@ public class Expectimax
 			grilleCopie.tourSuivantPrevu(4, emplacement) ;
 			
 			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 4
-			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie) ) * (1.0/10.0) ;
+			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie)+regle5(grilleCopie) ) * (1.0/10.0) ;
 			
 			// calcul du score des autres grilles
 			if ( profondeur > 0 )
@@ -102,7 +102,34 @@ public class Expectimax
 	}
 
 	
-
+	
+	/**
+	 * Regle du coin
+	 * @param grille
+	 * @return score
+	 */
+	public static int regle5(Plateau grille) 
+	{
+		int[][] plateau = grille.getPlateau() ;
+		
+		int max = 0 ;
+		for( int[] ligne : plateau )
+			for(int cellule : ligne)
+				if( cellule > max )
+					max = cellule ;
+		
+		if( plateau[0][0] == max || plateau[0][3] == max || plateau[3][0] == max || plateau[3][3] == max )
+			return 500 ;
+		else
+			return 0 ;
+					
+	}
+	
+	/**
+	 * Panalité de mort
+	 * @param grille
+	 * @return score
+	 */
 	public static int regle4(Plateau grille) 
 	{
 		if (grille.positionLibres().size() == 0 )
@@ -111,13 +138,22 @@ public class Expectimax
 			return 0 ;
 	}
 
-
+	/**
+	 * Maximiser les espaces libres
+	 * @param grille
+	 * @return score
+	 */
 	public static int regle3(Plateau grille) 
 	{
-		return grille.positionLibres().size();
+		return grille.positionLibres().size()*2 ;
+
 	}
 
-
+	/**
+	 * Ligne/colonne dans l'ordre croissant/décroissant + régularité des cellules
+	 * @param grille
+	 * @return score
+	 */
 	public static int regle2(Plateau grille)
 	{
 		int[][] plateau = grille.getPlateau() ;
@@ -127,20 +163,24 @@ public class Expectimax
 		for( int[] ligne : plateau )
 			if ( ( (ligne[1] == ligne[0] || ligne[1] == ligne[0]*2) && (ligne[2] == ligne[1] || ligne[2] == ligne[1]*2) && ( ligne[3] == ligne[2] || ligne[3] == ligne[2]*2) ) // ligne croissante
 					|| ( (ligne[3] == ligne[2] || ligne[3]*2 == ligne[2]) && (ligne[2] == ligne[1] || ligne[2]*2 == ligne[1]) && ( ligne[1] == ligne[0] || ligne[1]*2 == ligne[0]) ) ) // ligne decroissante
-				score++ ;
+				score+= 3 ;
 				
 		
 		
 		for ( int colonne = 0 ; colonne < 4 ; colonne++ )
 			if (  ( (plateau[1][colonne] == plateau[0][colonne] || plateau[1][colonne] == plateau[0][colonne]*2) && (plateau[2][colonne] == plateau[1][colonne] || plateau[2][colonne] == plateau[1][colonne]*2) && ( plateau[3][colonne] == plateau[2][colonne] || plateau[3][colonne] == plateau[2][colonne]*2) ) // colonne croissante
 				||  ( (plateau[3][colonne] == plateau[2][colonne] || plateau[3][colonne]*2 == plateau[2][colonne]) && (plateau[2][colonne] == plateau[1][colonne] || plateau[2][colonne]*2 == plateau[1][colonne]) && ( plateau[1][colonne] == plateau[0][colonne] || plateau[1][colonne]*2 == plateau[0][colonne]) ) )  // colonne decroissante
-				score++ ;
+				score+= 3 ;
 				
 		
 		return score;
 	}
 
-
+	/**
+	 * Ligne/colonne dans l'ordre croissant/décroissant
+	 * @param grille
+	 * @return score
+	 */
 	public static int regle1(Plateau grille) 
 	{
 		int[][] plateau = grille.getPlateau() ;
@@ -165,12 +205,22 @@ public class Expectimax
 	public static void main ( String[] args)
 	{
 		Plateau p = new Plateau() ;
-		p.plateauTest();
+		p.plateauTest(1);
 		
 		System.out.println(p);
 		System.out.println("Regle 1 = "+Expectimax.regle1(p));
 		System.out.println("Regle 2 = "+Expectimax.regle2(p));
 		System.out.println("Regle 3 = "+Expectimax.regle3(p));
-
+		System.out.println("Regle 4 = "+Expectimax.regle4(p));
+		System.out.println("Regle 5 = "+Expectimax.regle5(p));
+		
+		p.plateauTest(2);
+		
+		System.out.println(p);
+		System.out.println("Regle 1 = "+Expectimax.regle1(p));
+		System.out.println("Regle 2 = "+Expectimax.regle2(p));
+		System.out.println("Regle 3 = "+Expectimax.regle3(p));
+		System.out.println("Regle 4 = "+Expectimax.regle4(p));
+		System.out.println("Regle 5 = "+Expectimax.regle5(p));
 	}
 }
