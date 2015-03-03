@@ -51,9 +51,42 @@ public class Expectimax
 		double[] result = {meilleurDir, scoreMax} ;
 		return result;
 	}
-	
-	
 
+	private static short[] deplacementBas(short[] grille) 
+	{
+		dernierDeplacement = false ;
+		
+		for( int colonne = 3 ; colonne >= 0 ; colonne--)
+		{
+			for( int indice = 15-colonne ; indice >= 0 ; indice -= 4 )
+			{
+				boolean fusion = false ;
+				for ( int indiceBas = indice+4 ; indiceBas <= 15-colonne ; indiceBas+=4 )
+				{
+					if ( grille[indiceBas] == 0 )
+					{
+						grille[indiceBas] = grille[indiceBas-4];
+						grille[indiceBas-4] = 0 ;
+						dernierDeplacement = true ;
+					}
+					else if ( grille[indiceBas-4] == grille[indiceBas])
+					{
+						if (!fusion)
+						{
+							grille[indiceBas] = (short)(grille[indiceBas-4]*2);
+							grille[indiceBas-4] = 0 ;
+							fusion = true ;
+							dernierDeplacement = true ;
+						}
+					}
+					else
+						break;
+				}
+			}
+		}
+		
+		return grille;
+	}
 
 	private static short[] deplacementHaut(short[] grille) 
 	{
@@ -71,7 +104,6 @@ public class Expectimax
 						grille[indiceHaut] = grille[indiceHaut+4];
 						grille[indiceHaut+4] = 0 ;
 						dernierDeplacement = true ;
-						//System.out.println("depl "+indice);
 					}
 					else if ( grille[indiceHaut+4] == grille[indiceHaut])
 					{
@@ -81,8 +113,6 @@ public class Expectimax
 							grille[indiceHaut+4] = 0 ;
 							fusion = true ;
 							dernierDeplacement = true ;
-
-							//System.out.println("fusion "+indice);
 						}
 					}
 					else
@@ -91,13 +121,6 @@ public class Expectimax
 			}
 		}
 		
-		for( int i = 1 ; i <= 16; i++)
-		{
-			System.out.print(grille[i-1]+" ");
-			if(i%4 ==0)
-				System.out.println();
-			
-		}
 		return grille;
 	}
 
@@ -119,7 +142,6 @@ public class Expectimax
 							grille[indiceDroite] = grille[indiceDroite-1];
 							grille[indiceDroite-1] = 0 ;
 							dernierDeplacement = true ;
-							//System.out.println("depl "+indice);
 						}
 						else if ( grille[indiceDroite-1] == grille[indiceDroite])
 						{
@@ -129,8 +151,6 @@ public class Expectimax
 								grille[indiceDroite-1] = 0 ;
 								fusion = true ;
 								dernierDeplacement = true ;
-
-								//System.out.println("fusion "+indice);
 							}
 						}
 						else
@@ -139,16 +159,7 @@ public class Expectimax
 				}
 			}
 		}
-		
-
-		for( int i = 1 ; i <= 16; i++)
-		{
-			System.out.print(grille[i-1]+" ");
-			if(i%4 ==0)
-				System.out.println();
-			
-		}
-		
+				
 		return grille ;
 	}
 
@@ -170,7 +181,6 @@ public class Expectimax
 							grille[indiceGauche-1] = grille[indiceGauche];
 							grille[indiceGauche] = 0 ;
 							dernierDeplacement = true ;
-							System.out.println("depl "+indice);
 						}
 						else if ( grille[indiceGauche-1] == grille[indiceGauche])
 						{
@@ -180,8 +190,6 @@ public class Expectimax
 								grille[indiceGauche] = 0 ;
 								fusion = true ;
 								dernierDeplacement = true ;
-
-								System.out.println("fusion "+indice);
 							}
 						}
 						else
@@ -191,13 +199,6 @@ public class Expectimax
 			}
 		}
 		
-		for( int i = 1 ; i <= 16; i++)
-		{
-			System.out.print(grille[i-1]+" ");
-			if(i%4 ==0)
-				System.out.println();
-			
-		}
 		return grille ;
 	}
 
@@ -356,11 +357,11 @@ public class Expectimax
 	public static void main ( String[] args)
 	{
 		Plateau p = new Plateau() ;
-		p.plateauTest(2);
+		p.plateauTest(3);
 		
 		System.out.println(p+"\nEnsuite\n");
 		
-		Expectimax.deplacementHaut(p.getShortTableau());
+		Expectimax.deplacementBas(p.getShortTableau());
 				
 		/*System.out.println("Regle 1 = "+Expectimax.regle1(p));
 		System.out.println("Regle 2 = "+Expectimax.regle2(p));
