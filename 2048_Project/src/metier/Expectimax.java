@@ -1,11 +1,13 @@
 package metier;
 
+import java.util.ArrayList;
+
 
 public class Expectimax 
 {	
 	public static boolean dernierDeplacement = false ;
 	
-	public static double[] expectimax(short [] grille, int profondeur)
+	public static double[] expectimax(short[] grille, int profondeur)
 	{
 		//System.out.println("Expectimax profondeur: "+profondeur);
 		double scoreMax = -999999 ;
@@ -13,29 +15,28 @@ public class Expectimax
 		
 		for ( int direction = 1 ; direction <= 4 ; direction++ )
 		{
-			short [] grilleCopie = copie(grille);
+			short[] grilleCopie = copie(grille);
 			
 			// Direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			// Effectue un mouvement sans faire apparaitre les nouveaux nombres
-			boolean directionPossible = true ;
 			switch(direction)
 			{
 				case 1:
-					grilleCopie=deplacementGauche(grilleCopie);
+					grilleCopie = deplacementGauche(grilleCopie);
 					break;
 				case 2:
-					grilleCopie=deplacementDroite(grilleCopie);	
+					grilleCopie = deplacementDroite(grilleCopie);	
 					break;
 				case 3:
-					grilleCopie=deplacementHaut(grilleCopie);
+					grilleCopie = deplacementHaut(grilleCopie);
 					break;
 				case 4:
-					grilleCopie=deplacementBas(grilleCopie);
+					grilleCopie = deplacementBas(grilleCopie);
 					break;
 				default:
 					break;
 			}
-						
+			
 			if ( dernierDeplacement )
 			{
 				double score = eval(grilleCopie, profondeur-1) ;
@@ -50,6 +51,72 @@ public class Expectimax
 		
 		double[] result = {meilleurDir, scoreMax} ;
 		return result;
+	}
+	
+	private static double eval(short[] grille, int profondeur)
+	{
+		//System.out.println("Eval profondeur: "+profondeur);
+
+		double score = 0 ;
+		
+		// Calcul des apparitions de 2
+		for (int emplacement : getPositionLibres(grille))
+		{
+			short[] grilleCopie = copie(grille);
+			grilleCopie = tourSuivantPrevu(grilleCopie, (short)2, emplacement) ;
+			
+			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 2
+			score += ( /*regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie)+*/regle5(grilleCopie) ) * (9.0/10.0) ;
+			
+			// calcul du score des autres grilles
+			if ( profondeur > 0 )
+				score += expectimax(grilleCopie, profondeur-1)[1] ;
+			
+		}
+		
+		// Calcul des apparitions de 4
+		for (int emplacement : getPositionLibres(grille))
+		{
+			short[] grilleCopie = copie(grille);
+			grilleCopie = tourSuivantPrevu(grilleCopie, (short)4, emplacement) ;
+			
+			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 4
+			score += ( /*regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie)+*/regle5(grilleCopie) ) * (1.0/10.0) ;
+			
+			// calcul du score des autres grilles
+			if ( profondeur > 0 )
+				score += expectimax(grilleCopie, profondeur-1)[1] ;
+			
+		}
+		
+		score /= (getPositionLibres(grille).length*2) ; // score = score / nb Appartion Possible ( en comptant les 2 et 4 )
+		//System.out.println(score);
+		
+		return score;
+	}
+
+	private static short[] tourSuivantPrevu(short[] grilleCopie, short nombre, int position)
+	{
+		 grilleCopie[position] = nombre ;
+		 
+		 return grilleCopie ;
+	}
+
+	private static byte[] getPositionLibres(short[] grille) 
+	{
+		byte[] caseLibre = new byte[16];
+		
+		byte indice = 0;
+		for ( int i = 0, j = 0; i < grille.length ; i++ )
+		{
+			if ( grille[i] == 0 )
+			{
+				caseLibre[j] = indice ;
+				 j++;
+			}
+		}
+		
+		return caseLibre ;
 	}
 
 	private static short[] deplacementBas(short[] grille) 
@@ -84,7 +151,8 @@ public class Expectimax
 				}
 			}
 		}
-		
+		System.out.println(dernierDeplacement);
+
 		return grille;
 	}
 
@@ -203,66 +271,20 @@ public class Expectimax
 	}
 
 
-	public 
-
 	private static short[] copie(short[] grille) {
 		return grille.clone();
 	}
 
 
 
-	private static double eval(short [] grille, int profondeur)
-	{
-		//System.out.println("Eval profondeur: "+profondeur);
-
-		double score = 0 ;
-		
-		// Calcul des apparitions de 2
-		for (int emplacement : grille.positionLibres())
-		{
-			Plateau grilleCopie = new Plateau(grille);
-			grilleCopie.tourSuivantPrevu(2, emplacement) ;
-			
-			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 2
-			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie)+regle5(grilleCopie) ) * (9.0/10.0) ;
-			
-			// calcul du score des autres grilles
-			if ( profondeur > 0 )
-				score += expectimax(grilleCopie, profondeur-1)[1] ;
-			
-		}
-		
-		// Calcul des apparitions de 4
-		for (int emplacement : grille.positionLibres())
-		{
-			Plateau grilleCopie = new Plateau(grille);
-			grilleCopie.tourSuivantPrevu(4, emplacement) ;
-			
-			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 4
-			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie)+regle5(grilleCopie) ) * (1.0/10.0) ;
-			
-			// calcul du score des autres grilles
-			if ( profondeur > 0 )
-				score += expectimax(grilleCopie, profondeur-1)[1] ;
-			
-		}
-		
-		score /= (grille.positionLibres().size()*2) ; // score = score / nb Appartion Possible ( en comptant les 2 et 4 )
-		//System.out.println(score);
-		
-		return score;
-	}
-
-	
-	
 	/**
 	 * Regle du coin
 	 * @param grille
 	 * @return score
 	 */
-	public static int regle5(Plateau grille) 
+	public static int regle5(short[] grille) 
 	{
-		int[][] plateau = grille.getPlateau() ;
+		/*int[][] plateau = grille.getPlateau() ;
 		
 		int max = 0 ;
 		for( int[] ligne : plateau )
@@ -272,7 +294,7 @@ public class Expectimax
 		
 		if( plateau[0][0] == max || plateau[0][3] == max || plateau[3][0] == max || plateau[3][3] == max )
 			return 500 ;
-		else
+		else*/
 			return 0 ;
 					
 	}
@@ -281,7 +303,7 @@ public class Expectimax
 	 * Panalité de mort
 	 * @param grille
 	 * @return score
-	 */
+	 *//*
 	public static int regle4(Plateau grille) 
 	{
 		if (grille.positionLibres().size() == 0 )
@@ -294,18 +316,18 @@ public class Expectimax
 	 * Maximiser les espaces libres
 	 * @param grille
 	 * @return score
-	 */
+	 *//*
 	public static int regle3(Plateau grille) 
 	{
 		return grille.positionLibres().size()*2 ;
 
-	}
+	}*/
 
 	/**
 	 * Ligne/colonne dans l'ordre croissant/décroissant + régularité des cellules
 	 * @param grille
 	 * @return score
-	 */
+	 *//*
 	public static int regle2(Plateau grille)
 	{
 		int[][] plateau = grille.getPlateau() ;
@@ -327,12 +349,12 @@ public class Expectimax
 		
 		return score;
 	}
-
+*/
 	/**
 	 * Ligne/colonne dans l'ordre croissant/décroissant
 	 * @param grille
 	 * @return score
-	 */
+	 *//*
 	public static int regle1(Plateau grille) 
 	{
 		int[][] plateau = grille.getPlateau() ;
@@ -353,7 +375,7 @@ public class Expectimax
 		return score;
 	}
 
-
+*/
 	public static void main ( String[] args)
 	{
 		Plateau p = new Plateau() ;
@@ -362,7 +384,6 @@ public class Expectimax
 		System.out.println(p+"\nEnsuite\n");
 		
 		Expectimax.deplacementBas(p.getShortTableau());
-				
 		/*System.out.println("Regle 1 = "+Expectimax.regle1(p));
 		System.out.println("Regle 2 = "+Expectimax.regle2(p));
 		System.out.println("Regle 3 = "+Expectimax.regle3(p));
