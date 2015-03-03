@@ -160,6 +160,13 @@ public class Plateau
 			plateau[2][2] = 256 ;
 			plateau[2][3] = 512 ;
 		}
+		else if ( num == 3 )
+		{
+			plateau[0][0] = 2 ;
+			plateau[0][1] = 0 ;
+			plateau[0][2] = 2 ;
+			plateau[0][3] = 2 ;
+		}
 	}
 	
 	/**
@@ -596,6 +603,23 @@ public class Plateau
 		}
 		
 		return s ;
+	}
+	
+	
+	/**
+	 * Convertie le plateau en un tableau de short
+	 * @return shortTableau
+	 */
+	public short[] getShortTableau() {
+		int i=0;
+		short [] shortTableau = new short[16];
+		for (int []ligne : plateau){
+			for (int valeur : ligne){
+				shortTableau[i]=(short) valeur;
+				i++;
+			}
+		}
+		return shortTableau;
 	}
 	
 	

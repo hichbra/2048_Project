@@ -19,7 +19,7 @@ import metier.Plateau;
 @SuppressWarnings("serial")
 public class Controleur extends JFrame
 {
-	private Expectimax expectimax ;
+	
 	private Plateau plateau ;
 	private ArrayList<JLabel> labelCellules ;
 	
@@ -29,8 +29,6 @@ public class Controleur extends JFrame
 		
 		this.plateau = new Plateau();
 		this.plateau.debut();
-		
-		this.expectimax = new Expectimax(plateau);
 				
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.addKeyListener(new ControleurListener());
@@ -72,7 +70,7 @@ public class Controleur extends JFrame
 		boolean mouvPossible = true ;
 		while(!fin) // Tant que l'on peut jouer
 		{
-			int dir = (int)expectimax.expectimax(new Plateau(plateau), 4)[0];
+			int dir = (int)Expectimax.expectimax(plateau.getShortTableau(), 4)[0];
 			
 			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			switch(dir)

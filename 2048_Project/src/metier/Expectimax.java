@@ -2,15 +2,11 @@ package metier;
 
 
 public class Expectimax 
-{
-	private Plateau plateau ;
-
-	public Expectimax(Plateau plateau)
-	{
-		this.plateau = plateau ;
-	}
+{	
 	
-	public double[] expectimax(Plateau grille, int profondeur)
+	public static boolean dernierDeplacement = false ;
+	
+	public static double[] expectimax(short [] grille, int profondeur)
 	{
 		//System.out.println("Expectimax profondeur: "+profondeur);
 		double scoreMax = -999999 ;
@@ -18,7 +14,7 @@ public class Expectimax
 		
 		for ( int direction = 1 ; direction <= 4 ; direction++ )
 		{
-			Plateau grilleCopie =  new Plateau(this.plateau);
+			short [] grilleCopie = copie(grille);
 			
 			// Direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			// Effectue un mouvement sans faire apparaitre les nouveaux nombres
@@ -26,22 +22,22 @@ public class Expectimax
 			switch(direction)
 			{
 				case 1:
-					directionPossible = grilleCopie.gauche();
+					grilleCopie=deplacementGauche(grilleCopie);
 					break;
 				case 2:
-					directionPossible = grilleCopie.droite();	
+					grilleCopie=deplacementDroite(grilleCopie);	
 					break;
 				case 3:
-					directionPossible = grilleCopie.haut();
+					grilleCopie=deplacementHaut(grilleCopie);
 					break;
 				case 4:
-					directionPossible = grilleCopie.bas();
+					grilleCopie=deplacementBas(grilleCopie);
 					break;
 				default:
 					break;
 			}
 						
-			if ( directionPossible )
+			if ( dernierDeplacement )
 			{
 				double score = eval(grilleCopie, profondeur-1) ;
 						
@@ -59,7 +55,117 @@ public class Expectimax
 	
 	
 
-	private double eval(Plateau grille, int profondeur)
+//	private static short[] deplacementDroite(short[] grille) {
+//		
+//		dernierDeplacement = false ;
+//		
+//		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
+//		{
+//			for ( int indice = ligne ; indice < ligne+4 ; indice++ )
+//			{
+//				if ( indice%4 != 0 )
+//				{
+//					boolean fusion = false ;
+//					for ( int indiceDroite = ligne ; indiceDroite > indice ; indiceDroite++ )
+//					{
+//						System.out.println("indice D "+indiceDroite);
+//						
+//						if ( grille[indiceDroite+1] == 0 )
+//						{
+//							grille[indiceDroite+1] = grille[indiceDroite];
+//							grille[indiceDroite] = 0 ;
+//							dernierDeplacement = true ;
+//						}
+//						else if ( grille[indiceDroite+1] == grille[indiceDroite])
+//						{
+//							if (!fusion)
+//							{
+//								grille[indiceDroite+1] = (short)(grille[indiceDroite]*2);
+//								grille[indiceDroite] = 0 ;
+//								fusion = true ;
+//								dernierDeplacement = true ;
+//
+//								System.out.println("fusion "+indice);
+//							}
+//						}
+//						else
+//							break;
+//					}
+//				}
+//			}
+//		}
+//		
+//		for( int i = 1 ; i <= 16; i++)
+//		{
+//			System.out.print(grille[i-1]+" ");
+//			if(i%4 ==0)
+//				System.out.println();
+//			
+//		}
+//		return grille ;
+//	}
+
+
+
+	private static short[] deplacementGauche(short[] grille) 
+	{
+		dernierDeplacement = false ;
+		
+		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
+		{
+			for ( int indice = ligne ; indice < ligne+4 ; indice++ )
+			{
+				if ( indice%4 != 0 )
+				{
+					boolean fusion = false ;
+					for ( int indiceGauche = indice ; indiceGauche > ligne ; indiceGauche-- )
+					{
+						if ( grille[indiceGauche-1] == 0 )
+						{
+							grille[indiceGauche-1] = grille[indiceGauche];
+							grille[indiceGauche] = 0 ;
+							dernierDeplacement = true ;
+							System.out.println("depl "+indice);
+						}
+						else if ( grille[indiceGauche-1] == grille[indiceGauche])
+						{
+							if (!fusion)
+							{
+								grille[indiceGauche-1] = (short)(grille[indiceGauche]*2);
+								grille[indiceGauche] = 0 ;
+								fusion = true ;
+								dernierDeplacement = true ;
+
+								System.out.println("fusion "+indice);
+							}
+						}
+						else
+							break;
+					}
+				}
+			}
+		}
+		
+		for( int i = 1 ; i <= 16; i++)
+		{
+			System.out.print(grille[i-1]+" ");
+			if(i%4 ==0)
+				System.out.println();
+			
+		}
+		return grille ;
+	}
+
+
+	public 
+
+	private static short[] copie(short[] grille) {
+		return grille.clone();
+	}
+
+
+
+	private static double eval(short [] grille, int profondeur)
 	{
 		//System.out.println("Eval profondeur: "+profondeur);
 
@@ -205,10 +311,13 @@ public class Expectimax
 	public static void main ( String[] args)
 	{
 		Plateau p = new Plateau() ;
-		p.plateauTest(1);
+		p.plateauTest(3);
 		
-		System.out.println(p);
-		System.out.println("Regle 1 = "+Expectimax.regle1(p));
+		System.out.println(p+"\nEnsuite\n");
+		
+		Expectimax.deplacementDroite(p.getShortTableau());
+				
+		/*System.out.println("Regle 1 = "+Expectimax.regle1(p));
 		System.out.println("Regle 2 = "+Expectimax.regle2(p));
 		System.out.println("Regle 3 = "+Expectimax.regle3(p));
 		System.out.println("Regle 4 = "+Expectimax.regle4(p));
@@ -222,5 +331,6 @@ public class Expectimax
 		System.out.println("Regle 3 = "+Expectimax.regle3(p));
 		System.out.println("Regle 4 = "+Expectimax.regle4(p));
 		System.out.println("Regle 5 = "+Expectimax.regle5(p));
+		*/
 	}
 }
