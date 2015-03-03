@@ -55,6 +55,52 @@ public class Expectimax
 	
 
 
+	private static short[] deplacementHaut(short[] grille) 
+	{
+		dernierDeplacement = false ;
+		
+		for( int colonne = 0 ; colonne < 4 ; colonne++)
+		{
+			for( int indice = colonne ; indice < 16 ; indice += 4 )
+			{
+				boolean fusion = false ;
+				for ( int indiceHaut = indice-4 ; indiceHaut >= 0 ; indiceHaut-=4 )
+				{
+					if ( grille[indiceHaut] == 0 )
+					{
+						grille[indiceHaut] = grille[indiceHaut+4];
+						grille[indiceHaut+4] = 0 ;
+						dernierDeplacement = true ;
+						//System.out.println("depl "+indice);
+					}
+					else if ( grille[indiceHaut+4] == grille[indiceHaut])
+					{
+						if (!fusion)
+						{
+							grille[indiceHaut] = (short)(grille[indiceHaut+4]*2);
+							grille[indiceHaut+4] = 0 ;
+							fusion = true ;
+							dernierDeplacement = true ;
+
+							//System.out.println("fusion "+indice);
+						}
+					}
+					else
+						break;
+				}
+			}
+		}
+		
+		for( int i = 1 ; i <= 16; i++)
+		{
+			System.out.print(grille[i-1]+" ");
+			if(i%4 ==0)
+				System.out.println();
+			
+		}
+		return grille;
+	}
+
 	private static short[] deplacementDroite(short[] grille)
 	{
 		dernierDeplacement = false ;
@@ -105,9 +151,6 @@ public class Expectimax
 		
 		return grille ;
 	}
-
-
-
 
 	private static short[] deplacementGauche(short[] grille) 
 	{
@@ -313,11 +356,11 @@ public class Expectimax
 	public static void main ( String[] args)
 	{
 		Plateau p = new Plateau() ;
-		p.plateauTest(3);
+		p.plateauTest(2);
 		
 		System.out.println(p+"\nEnsuite\n");
 		
-		Expectimax.deplacementDroite(p.getShortTableau());
+		Expectimax.deplacementHaut(p.getShortTableau());
 				
 		/*System.out.println("Regle 1 = "+Expectimax.regle1(p));
 		System.out.println("Regle 2 = "+Expectimax.regle2(p));
