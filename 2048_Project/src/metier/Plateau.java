@@ -166,6 +166,11 @@ public class Plateau
 			plateau[0][1] = 0 ;
 			plateau[0][2] = 2 ;
 			plateau[0][3] = 2 ;
+			
+			plateau[3][0] = 2 ;
+			plateau[3][1] = 0 ;
+			plateau[3][2] = 2 ;
+			plateau[3][3] = 2 ;
 		}
 	}
 	

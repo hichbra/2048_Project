@@ -3,7 +3,6 @@ package metier;
 
 public class Expectimax 
 {	
-	
 	public static boolean dernierDeplacement = false ;
 	
 	public static double[] expectimax(short [] grille, int profondeur)
@@ -55,55 +54,58 @@ public class Expectimax
 	
 	
 
-//	private static short[] deplacementDroite(short[] grille) {
-//		
-//		dernierDeplacement = false ;
-//		
-//		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
-//		{
-//			for ( int indice = ligne ; indice < ligne+4 ; indice++ )
-//			{
-//				if ( indice%4 != 0 )
-//				{
-//					boolean fusion = false ;
-//					for ( int indiceDroite = ligne ; indiceDroite > indice ; indiceDroite++ )
-//					{
-//						System.out.println("indice D "+indiceDroite);
-//						
-//						if ( grille[indiceDroite+1] == 0 )
-//						{
-//							grille[indiceDroite+1] = grille[indiceDroite];
-//							grille[indiceDroite] = 0 ;
-//							dernierDeplacement = true ;
-//						}
-//						else if ( grille[indiceDroite+1] == grille[indiceDroite])
-//						{
-//							if (!fusion)
-//							{
-//								grille[indiceDroite+1] = (short)(grille[indiceDroite]*2);
-//								grille[indiceDroite] = 0 ;
-//								fusion = true ;
-//								dernierDeplacement = true ;
-//
-//								System.out.println("fusion "+indice);
-//							}
-//						}
-//						else
-//							break;
-//					}
-//				}
-//			}
-//		}
-//		
-//		for( int i = 1 ; i <= 16; i++)
-//		{
-//			System.out.print(grille[i-1]+" ");
-//			if(i%4 ==0)
-//				System.out.println();
-//			
-//		}
-//		return grille ;
-//	}
+
+	private static short[] deplacementDroite(short[] grille)
+	{
+		dernierDeplacement = false ;
+		
+		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
+		{
+			for ( int indice = ligne+3 ; indice >= ligne ; indice-- )
+			{
+				if ( indice%4 != 0 )
+				{
+					boolean fusion = false ;
+					for ( int indiceDroite = indice ; indiceDroite < ligne+4 ; indiceDroite++ )
+					{
+						if ( grille[indiceDroite] == 0 )
+						{
+							grille[indiceDroite] = grille[indiceDroite-1];
+							grille[indiceDroite-1] = 0 ;
+							dernierDeplacement = true ;
+							//System.out.println("depl "+indice);
+						}
+						else if ( grille[indiceDroite-1] == grille[indiceDroite])
+						{
+							if (!fusion)
+							{
+								grille[indiceDroite] = (short)(grille[indiceDroite-1]*2);
+								grille[indiceDroite-1] = 0 ;
+								fusion = true ;
+								dernierDeplacement = true ;
+
+								//System.out.println("fusion "+indice);
+							}
+						}
+						else
+							break;
+					}
+				}
+			}
+		}
+		
+
+		for( int i = 1 ; i <= 16; i++)
+		{
+			System.out.print(grille[i-1]+" ");
+			if(i%4 ==0)
+				System.out.println();
+			
+		}
+		
+		return grille ;
+	}
+
 
 
 
