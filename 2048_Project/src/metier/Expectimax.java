@@ -1,6 +1,5 @@
 package metier;
 
-import java.util.ArrayList;
 
 
 public class Expectimax 
@@ -66,7 +65,7 @@ public class Expectimax
 			grilleCopie = tourSuivantPrevu(grilleCopie, (short)2, emplacement) ;
 			
 			// calcul du score de la grille en ponderant le score avec la probabilit� d'avoir un 2
-			score += ( /*regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie)+*/regle5(grilleCopie) ) * (9.0/10.0) ;
+			score += ( regle(grilleCopie) ) * (9.0/10.0) ;
 			
 			// calcul du score des autres grilles
 			if ( profondeur > 0 )
@@ -81,7 +80,7 @@ public class Expectimax
 			grilleCopie = tourSuivantPrevu(grilleCopie, (short)4, emplacement) ;
 			
 			// calcul du score de la grille en ponderant le score avec la probabilit� d'avoir un 4
-			score += ( /*regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)+regle4(grilleCopie)+*/regle5(grilleCopie) ) * (1.0/10.0) ;
+			score += ( regle(grilleCopie) ) * (1.0/10.0) ;
 			
 			// calcul du score des autres grilles
 			if ( profondeur > 0 )
@@ -291,14 +290,40 @@ public class Expectimax
 	}
 
 	/**
-	 * Regle
+	 * Regle valeur max sur les bords + bonus cases vides
 	 * @param grille
 	 * @return
 	 */
 	public static int regle(short[] grille) 
 	{
-		return 0;
+		int score = 0 ;
 		
+		int max1 = 0, max2 = 0, max3 = 0, max4 = 0 ;
+		for(short cellule : grille)
+		{
+			if( cellule > max1 )
+				max1 = cellule ;
+			else if ( cellule > max2 )
+				max2 = cellule ;
+			else if ( cellule > max3 )
+				max3 = cellule ;
+			else if ( cellule > max4 )
+				max4 = cellule ;
+		}
+		
+		for (int i = 0 ; i <= 15 ; i++)
+		{
+			if ( i != 5 && i != 6 && i != 9 && i != 10 )
+				if ( grille[i] == max1 || grille[i] == max2 || grille[i] == max3 || grille[i] == max4 )
+					score++ ;
+		
+			if ( grille[i] == 0 )
+				score += 2 ;
+		}
+		
+		
+		
+		return score ;
 	}
 
 	/**
