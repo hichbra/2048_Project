@@ -134,7 +134,9 @@ public class Expectimax
 					{
 						grille[indiceBas] = grille[indiceBas-4];
 						grille[indiceBas-4] = 0 ;
-						dernierDeplacement = true ;
+						
+						if ( grille[indiceBas] != 0 || grille[indiceBas-4] != 0 )
+							dernierDeplacement = true ;
 					}
 					else if ( grille[indiceBas-4] == grille[indiceBas])
 					{
@@ -143,7 +145,9 @@ public class Expectimax
 							grille[indiceBas] = (short)(grille[indiceBas-4]*2);
 							grille[indiceBas-4] = 0 ;
 							fusion = true ;
-							dernierDeplacement = true ;
+							
+							if ( grille[indiceBas] != 0 || grille[indiceBas-4] != 0 )
+								dernierDeplacement = true ;
 						}
 					}
 					else
@@ -151,7 +155,6 @@ public class Expectimax
 				}
 			}
 		}
-		System.out.println(dernierDeplacement);
 
 		return grille;
 	}
@@ -171,7 +174,9 @@ public class Expectimax
 					{
 						grille[indiceHaut] = grille[indiceHaut+4];
 						grille[indiceHaut+4] = 0 ;
-						dernierDeplacement = true ;
+						
+						if ( grille[indiceHaut] != 0 || grille[indiceHaut+4] != 0 )
+							dernierDeplacement = true ;
 					}
 					else if ( grille[indiceHaut+4] == grille[indiceHaut])
 					{
@@ -180,7 +185,9 @@ public class Expectimax
 							grille[indiceHaut] = (short)(grille[indiceHaut+4]*2);
 							grille[indiceHaut+4] = 0 ;
 							fusion = true ;
-							dernierDeplacement = true ;
+							
+							if ( grille[indiceHaut] != 0 || grille[indiceHaut+4] != 0 )
+								dernierDeplacement = true ;
 						}
 					}
 					else
@@ -188,7 +195,7 @@ public class Expectimax
 				}
 			}
 		}
-		
+
 		return grille;
 	}
 
@@ -209,7 +216,9 @@ public class Expectimax
 						{
 							grille[indiceDroite] = grille[indiceDroite-1];
 							grille[indiceDroite-1] = 0 ;
-							dernierDeplacement = true ;
+							
+							if ( grille[indiceDroite] != 0 || grille[indiceDroite-1] != 0)
+								dernierDeplacement = true ;
 						}
 						else if ( grille[indiceDroite-1] == grille[indiceDroite])
 						{
@@ -218,7 +227,9 @@ public class Expectimax
 								grille[indiceDroite] = (short)(grille[indiceDroite-1]*2);
 								grille[indiceDroite-1] = 0 ;
 								fusion = true ;
-								dernierDeplacement = true ;
+								
+								if ( grille[indiceDroite] != 0 || grille[indiceDroite-1] != 0)
+									dernierDeplacement = true ;
 							}
 						}
 						else
@@ -227,7 +238,7 @@ public class Expectimax
 				}
 			}
 		}
-				
+
 		return grille ;
 	}
 
@@ -248,7 +259,9 @@ public class Expectimax
 						{
 							grille[indiceGauche-1] = grille[indiceGauche];
 							grille[indiceGauche] = 0 ;
-							dernierDeplacement = true ;
+
+							if ( grille[indiceGauche] != 0 || grille[indiceGauche-1] != 0 )
+								dernierDeplacement = true ;
 						}
 						else if ( grille[indiceGauche-1] == grille[indiceGauche])
 						{
@@ -257,7 +270,9 @@ public class Expectimax
 								grille[indiceGauche-1] = (short)(grille[indiceGauche]*2);
 								grille[indiceGauche] = 0 ;
 								fusion = true ;
-								dernierDeplacement = true ;
+								
+								if ( grille[indiceGauche] != 0 || grille[indiceGauche-1] != 0 )
+									dernierDeplacement = true ;
 							}
 						}
 						else
@@ -266,7 +281,7 @@ public class Expectimax
 				}
 			}
 		}
-		
+
 		return grille ;
 	}
 
@@ -275,7 +290,16 @@ public class Expectimax
 		return grille.clone();
 	}
 
-
+	/**
+	 * Regle
+	 * @param grille
+	 * @return
+	 */
+	public static int regle(short[] grille) 
+	{
+		return 0;
+		
+	}
 
 	/**
 	 * Regle du coin
@@ -284,17 +308,14 @@ public class Expectimax
 	 */
 	public static int regle5(short[] grille) 
 	{
-		/*int[][] plateau = grille.getPlateau() ;
-		
 		int max = 0 ;
-		for( int[] ligne : plateau )
-			for(int cellule : ligne)
-				if( cellule > max )
-					max = cellule ;
+		for(short cellule : grille)
+			if( cellule > max )
+				max = cellule ;
 		
-		if( plateau[0][0] == max || plateau[0][3] == max || plateau[3][0] == max || plateau[3][3] == max )
-			return 500 ;
-		else*/
+		if( grille[3] == max  )
+			return 1 ;
+		else
 			return 0 ;
 					
 	}
@@ -376,14 +397,16 @@ public class Expectimax
 	}
 
 */
-	public static void main ( String[] args)
+	public static void main (String[] args)
 	{
 		Plateau p = new Plateau() ;
-		p.plateauTest(3);
-		
+		p.plateauTest(2);
+		short[] plat = p.getShortTableau();
 		System.out.println(p+"\nEnsuite\n");
 		
-		Expectimax.deplacementBas(p.getShortTableau());
+		plat = Expectimax.deplacementBas(plat);
+		plat = Expectimax.deplacementBas(plat);
+		plat = Expectimax.deplacementBas(plat);
 		/*System.out.println("Regle 1 = "+Expectimax.regle1(p));
 		System.out.println("Regle 2 = "+Expectimax.regle2(p));
 		System.out.println("Regle 3 = "+Expectimax.regle3(p));
