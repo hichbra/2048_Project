@@ -5,6 +5,9 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -19,13 +22,25 @@ import metier.Plateau;
 @SuppressWarnings("serial")
 public class Controleur extends JFrame
 {
+	public static int essai = 0 ;
+	public static ArrayList<Integer> resultat = new ArrayList<Integer>() ;
 	
+	private FileWriter file ;
 	private Plateau plateau ;
 	private ArrayList<JLabel> labelCellules ;
 	
 	public Controleur()
 	{
 		super("2048_Project");
+		
+		try {
+			this.file = new FileWriter(new File("test/Prof6.txt"), true);
+		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		
 		this.plateau = new Plateau();
 		this.plateau.debut();
@@ -65,12 +80,13 @@ public class Controleur extends JFrame
 	
 	private void lancerExpectimax() 
 	{
+		essai++ ;
 		// Expectimax
 		boolean fin = false ;
 		boolean mouvPossible = true ;
 		while(!fin) // Tant que l'on peut jouer
 		{
-			int dir = (int)Expectimax.expectimax(plateau.getShortTableau(), 3)[0];
+			int dir = (int)Expectimax.expectimax(plateau.getShortTableau(), 6)[0];
 			
 			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			switch(dir)
@@ -97,12 +113,13 @@ public class Controleur extends JFrame
 				if ( ! plateau.tourSuivant()  )
 				{
 					fin = true ;
-					finDuJeu();
+					finDuTest();
 				}
 			}
 			
 			actualiser();
 		}
+
 	}
 
 	/**
@@ -266,6 +283,81 @@ public class Controleur extends JFrame
 		}
 		else
 			System.exit(0);
+
+	}
+	
+	/**
+	 * Permet de Quitter ou de Recommencer � la fin d'une partie
+	 */
+	public void finDuTest() 
+	{
+		try 
+		{
+			actualiser();
+			
+			int scoreMax = 0 ;
+			for ( int val : plateau.getCellules())
+				if (val > scoreMax) 
+					scoreMax = val ;
+				
+			if (essai <= 100)
+			{
+				file.write("Essai "+essai+": "+scoreMax+"\n");
+				resultat.add(scoreMax);
+				
+				this.plateau.debut();
+				actualiser();
+				lancerExpectimax();
+			}
+			else		
+			{
+				int nb4096=0, nb2048=0, nb1024=0, nb512=0, nb256=0, nb128=0, nb64=0 ;
+				for ( int i : resultat)
+				{
+					switch (i) 
+					{
+						case 4096:
+							nb4096++;
+							break;
+						case 2048:
+							nb2048++;
+							break;
+						case 1024:
+							nb1024++;
+							break;
+						case 512:
+							nb512++;
+							break;
+						case 256:
+							nb256++;
+							break;
+						case 128:
+							nb128++;
+							break;
+						case 64:
+							nb64++;
+							break;
+						default:
+							break;
+					}
+				}
+				
+				file.write("\nResultat : ");
+				file.write("\n4096="+nb4096);
+				file.write("\n2048="+nb2048);
+				file.write("\n1024="+nb1024);
+				file.write("\n512="+nb512);
+				file.write("\n256="+nb256);
+				file.write("\n128="+nb128);
+				file.write("\n64="+nb64);
+				
+				file.close();
+
+				System.exit(0);
+			}
+			
+		}
+		catch (IOException e) {e.printStackTrace();}
 
 	}
 	
