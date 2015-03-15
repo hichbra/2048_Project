@@ -208,7 +208,7 @@ public class Plateau
 	
 			plateau[lignePosAleatoire-1][colPosAleatoire-1] = tirageAleatoire();
 			
-			System.out.println(this);
+			//System.out.println(this);
 			// On regarde si le nombre apparu complete la grille
 			boolean dernierCoup = true ;
 			if(plateauContient(0))

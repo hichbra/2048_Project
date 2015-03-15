@@ -1,5 +1,7 @@
 package metier;
 
+import java.util.ArrayList;
+
 public class Expectimax 
 {	
 	public static boolean dernierDeplacement = false ;
@@ -59,12 +61,11 @@ public class Expectimax
 		// Calcul des apparitions de 2
 		for (int emplacement : getPositionLibres(grille))
 		{
-
 			short[] grilleCopie = copie(grille);
 			grilleCopie = tourSuivantPrevu(grilleCopie, (short)2, emplacement) ;
 			
 			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 2
-			score += ( regle1(grilleCopie)/*+regle2(grilleCopie)*/+regle3(grilleCopie)) /* * (9.0/10.0)*/ ;
+			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie))/* * (9.0/10.0)*/ ;
 			
 			// calcul du score des autres grilles
 			if ( profondeur > 0 )
@@ -74,21 +75,21 @@ public class Expectimax
 		}
 		
 		// Calcul des apparitions de 4
-		for (int emplacement : getPositionLibres(grille))
+		/*for (int emplacement : getPositionLibres(grille))
 		{
 			short[] grilleCopie = copie(grille);
 			grilleCopie = tourSuivantPrevu(grilleCopie, (short)4, emplacement) ;
 			
 			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 4
-			score += ( regle1(grilleCopie)/*+regle2(grilleCopie)*/+regle3(grilleCopie))/* * (1.0/10.0)*/ ;
+			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)) * (1.0/10.0) ;
 			
 			// calcul du score des autres grilles
 			if ( profondeur > 0 )
 				score += expectimax(grilleCopie, profondeur-1)[1] ;
 			
-		}
+		}*/
 		
-		score /= (getPositionLibres(grille).length*2) ; // score = score / nb Appartion Possible ( en comptant les 2 et 4 )
+		score /= (getPositionLibres(grille).size()*2) ; // score = score / nb Appartion Possible ( en comptant les 2 et 4 )
 		//System.out.println(score);
 		
 		return score;
@@ -101,17 +102,31 @@ public class Expectimax
 		 return grilleCopie ;
 	}
 
-	private static byte[] getPositionLibres(short[] grille) 
+	/*private static byte[] getPositionLibres(short[] grille) 
 	{
 		byte[] caseLibre = new byte[16];
 		
-		byte indice = 0;
-		for ( int i = 0, j = 0; i < grille.length ; i++ )
+		for ( byte i = 0 , j = 0; i < grille.length ; i++ )
 		{
 			if ( grille[i] == 0 )
 			{
-				caseLibre[j] = indice ;
-				 j++;
+				caseLibre[j] = i ;
+				j++;
+			}
+		}
+		
+		return caseLibre ;
+	}*/
+	
+	private static ArrayList<Byte> getPositionLibres(short[] grille) 
+	{
+		ArrayList<Byte> caseLibre = new ArrayList<Byte>();
+		
+		for ( byte i = 0 ; i < grille.length ; i++ )
+		{
+			if ( grille[i] == 0 )
+			{
+				caseLibre.add(i) ;
 			}
 		}
 		
@@ -287,6 +302,35 @@ public class Expectimax
 	private static short[] copie(short[] grille) {
 		return grille.clone();
 	}
+	
+	public static int regleGrad(short[] grille) 
+	{
+		int score = 0 ;
+		
+		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
+		{
+			switch (ligne) {
+			case 0:
+				score += ( grille[ligne]*0 + grille[ligne+1]*1 + grille[ligne+2]*2 + grille[ligne+3]*3 );
+				break;
+			case 4:
+				score += ( grille[ligne]*(-1) + grille[ligne+1]*0 + grille[ligne+2]*1 + grille[ligne+3]*2 );
+				break;
+			case 8:
+				score += ( grille[ligne]*(-2) + grille[ligne+1]*(-1) + grille[ligne+2]*0 + grille[ligne+3]*1 );
+				break;
+			case 12:
+				score += ( grille[ligne]*(-3) + grille[ligne+1]*(-2) + grille[ligne+2]*(-1) + grille[ligne+3]*0 );
+				break;
+			default:
+				break;
+			}
+			score++ ;
+		}
+		
+		
+		return score ;
+	}
 
 	/**
 	 * Regle valeur max sur les bords + bonus cases vides
@@ -364,8 +408,7 @@ public class Expectimax
 	 */
 	public static int regle3(short[] grille) 
 	{
-		return getPositionLibres(grille).length*2 ;
-
+		return getPositionLibres(grille).size()*2 ;
 	}
 
 	/**
@@ -377,39 +420,22 @@ public class Expectimax
 	{		
 		int score = 0 ;
 		
-		// ligne 1
-		if ( ( (grille[1] == grille[0] || grille[1] == grille[0]*2) && (grille[2] == grille[1] || grille[2] == grille[1]*2) && ( grille[3] == grille[2] || grille[3] == grille[2]*2) ) // ligne croissante
-				|| ( (grille[3] == grille[2] || grille[3]*2 == grille[2]) && (grille[2] == grille[1] || grille[2]*2 == grille[1]) && ( grille[1] == grille[0] || grille[1]*2 == grille[0]) ) ) // ligne decroissante
-					score+= 3 ;
-			
-		// ligne 2
-		if ( ( (grille[5] == grille[4] || grille[5] == grille[4]*6) && (grille[6] == grille[5] || grille[6] == grille[5]*6) && ( grille[7] == grille[6] || grille[7] == grille[6]*6) ) // ligne croissante
-				|| ( (grille[7] == grille[6] || grille[7]*6 == grille[6]) && (grille[6] == grille[5] || grille[6]*6 == grille[5]) && ( grille[5] == grille[4] || grille[5]*6 == grille[4]) ) ) // ligne decroissante
-					score+= 3 ;
+		// Ligne
+		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
+		{
+			if ( ( (grille[ligne+1] == grille[ligne+0] || grille[ligne+1] == grille[ligne+0]*2) && (grille[ligne+2] == grille[ligne+1] || grille[ligne+2] == grille[ligne+1]*2) && ( grille[ligne+3] == grille[ligne+2] || grille[ligne+3] == grille[ligne+2]*2) ) // ligne croissante
+					|| ( (grille[ligne+3] == grille[ligne+2] || grille[ligne+3]*2 == grille[ligne+2]) && (grille[ligne+2] == grille[ligne+1] || grille[ligne+2]*2 == grille[ligne+1]) && ( grille[ligne+1] == grille[ligne+0] || grille[ligne+1]*2 == grille[ligne+0]) ) ) // ligne decroissante
+				score+= 3 ;
+		}
 		
-		// ligne 3
-		if ( ( (grille[9] == grille[8] || grille[9] == grille[8]*10) && (grille[10] == grille[9] || grille[10] == grille[9]*10) && ( grille[11] == grille[10] || grille[11] == grille[10]*10) ) // ligne croissante
-				|| ( (grille[11] == grille[10] || grille[11]*10 == grille[10]) && (grille[10] == grille[9] || grille[10]*10 == grille[9]) && ( grille[9] == grille[8] || grille[9]*10 == grille[8]) ) ) // ligne decroissante
-					score+= 3 ;
-				
-		// ligne 4
-		if ( ( (grille[13] == grille[12] || grille[13] == grille[12]*2) && (grille[14] == grille[13] || grille[14] == grille[13]*2) && ( grille[15] == grille[14] || grille[15] == grille[14]*2) ) // ligne croissante
-				|| ( (grille[15] == grille[14] || grille[15]*2 == grille[14]) && (grille[14] == grille[13] || grille[14]*2 == grille[13]) && ( grille[13] == grille[12] || grille[13]*2 == grille[12]) ) ) // ligne decroissante
-					score+= 3 ;
-		
-		
+		// Colonne
 		for( int colonne = 0 ; colonne < 4 ; colonne ++)
 		{
 			if ( ( (grille[colonne] == grille[colonne+4] || grille[colonne] == grille[colonne+4]*2) && (grille[colonne+4] == grille[colonne+8] || grille[colonne+4] == grille[colonne+8]*2) && (grille[colonne+8] == grille[colonne+12] || grille[colonne+8] == grille[colonne+12]*2 ) ) // ligne croissante
 					|| ( (grille[colonne] == grille[colonne+4] || grille[colonne]*2 == grille[colonne+4]) && (grille[colonne+4] == grille[colonne+8] || grille[colonne+4]*2 == grille[colonne+8]) && (grille[colonne+8] == grille[colonne+12] || grille[colonne+8]*2 == grille[colonne+12] )) ) // ligne decroissante
-				score++ ;
+				score+=3 ;
 		}
-		
-		// colonne
-		/*if (  ( (grille[1][colonne] == grille[0][colonne] || grille[1][colonne] == grille[0][colonne]*2) && (grille[2][colonne] == grille[1][colonne] || grille[2][colonne] == grille[1][colonne]*2) && ( grille[3][colonne] == grille[2][colonne] || grille[3][colonne] == grille[2][colonne]*2) ) // colonne croissante
-				||  ( (grille[3][colonne] == grille[2][colonne] || grille[3][colonne]*2 == grille[2][colonne]) && (grille[2][colonne] == grille[1][colonne] || grille[2][colonne]*2 == grille[1][colonne]) && ( grille[1][colonne] == grille[0][colonne] || grille[1][colonne]*2 == grille[0][colonne]) ) )  // colonne decroissante
-				score+= 3 ;
-				*/
+				
 		
 		return score;
 	}
@@ -420,7 +446,9 @@ public class Expectimax
 	 * @return score
 	 */
 	public static int regle1(short[] grille) 
-	{		
+	{	
+		// Avoir une regularité ENTRE les lignes ( si croissant, alors les autre lignes croissant, sinon perte de point. La ligne de réference utilisé est celle de la plus grande valeur)
+
 		int score = 0 ;
 		
 		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
@@ -441,28 +469,26 @@ public class Expectimax
 	}
 
 
-/*	public static void main (String[] args)
+	/*public static void main (String[] args)
 	{
-		Plateau p = new Plateau() ;
-		p.plateauTest(2);
-		short[] plat = p.getShortTableau();
-		System.out.println(p+"\nEnsuite\n");
+		Plateau pl = new Plateau() ;
+		pl.plateauTest(2);
+		short[] p = pl.getShortTableau();
+		System.out.println(pl+"\nEnsuite\n");
 		
-		plat = Expectimax.deplacementBas(plat);
-		plat = Expectimax.deplacementBas(plat);
-		plat = Expectimax.deplacementBas(plat);*/
-		/*System.out.println("Regle 1 = "+Expectimax.regle1(p));
-		System.out.println("Regle 2 = "+Expectimax.regle2(p));
-		System.out.println("Regle 3 = "+Expectimax.regle3(p));
-		System.out.println("Regle 4 = "+Expectimax.regle4(p));
-		System.out.println("Regle 5 = "+Expectimax.regle5(p));
-		
-		p.plateauTest(2);
-		
-		System.out.println(p);
 		System.out.println("Regle 1 = "+Expectimax.regle1(p));
 		System.out.println("Regle 2 = "+Expectimax.regle2(p));
-		System.out.println("Regle 3 = "+Expectimax.regle3(p));
+		System.out.println("Regle 3 = "+Expectimax.regle3(p)+"\n\n");*/
+		/*System.out.println("Regle 4 = "+Expectimax.regle4(p));
+		System.out.println("Regle 5 = "+Expectimax.regle5(p));
+		*//*
+		pl.plateauTest(1);
+		p = pl.getShortTableau();
+		System.out.println(pl);
+		System.out.println("Regle 1 = "+Expectimax.regle1(p));
+		System.out.println("Regle 2 = "+Expectimax.regle2(p));
+		System.out.println("Regle 3 = "+Expectimax.regle3(p));*/
+		/*
 		System.out.println("Regle 4 = "+Expectimax.regle4(p));
 		System.out.println("Regle 5 = "+Expectimax.regle5(p));
 		*/
