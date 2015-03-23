@@ -11,39 +11,47 @@ public class Expectimax
 		double scoreMax = -999999 ;
 		int meilleurDir = 0 ;
 		
-		
-		for ( int direction = 1 ; direction <= 4 ; direction++ )
+		if (profondeur != 1)
+			System.out.println();
+		else
 		{
-			short[] grilleCopie = copie(grille);
-			
-			// Direction : 1=gauche | 2=droite | 3=haut | 4=bas
-			// Effectue un mouvement sans faire apparaitre les nouveaux nombres
-			switch(direction)
+			for ( int direction = 1 ; direction <= 4 ; direction++ )
 			{
-				case 1:
-					grilleCopie = deplacementGauche(grilleCopie);
-					break;
-				case 2:
-					grilleCopie = deplacementDroite(grilleCopie);	
-					break;
-				case 3:
-					grilleCopie = deplacementHaut(grilleCopie);
-					break;
-				case 4:
-					grilleCopie = deplacementBas(grilleCopie);
-					break;
-				default:
-					break;
-			}
-			
-			if ( dernierDeplacement )
-			{
-				double score = eval(grilleCopie, profondeur-1) ;
-				//System.out.println("score direction = "+score );		
-				if ( score > scoreMax )
+				short[] grilleCopie = copie(grille);
+				
+				// Direction : 1=gauche | 2=droite | 3=haut | 4=bas
+				// Effectue un mouvement sans faire apparaitre les nouveaux nombres
+				switch(direction)
 				{
-					scoreMax = score;
-					meilleurDir = direction ;
+					case 1:
+						grilleCopie = deplacementGauche(grilleCopie);
+						meilleurDir = 1;
+						break;
+					case 2:
+						grilleCopie = deplacementDroite(grilleCopie);
+						meilleurDir = 2;	
+						break;
+					case 3:
+						grilleCopie = deplacementHaut(grilleCopie);
+						meilleurDir = 3;
+						break;
+					case 4:
+						grilleCopie = deplacementBas(grilleCopie);
+						meilleurDir = 4;
+						break;
+					default:
+						break;
+				}
+				
+				if ( dernierDeplacement )
+				{
+					double score = eval(grilleCopie, profondeur-1) ;
+					//System.out.println("score direction = "+score );		
+					if ( score > scoreMax )
+					{
+						scoreMax = score;
+						meilleurDir = direction ;
+					}
 				}
 			}
 		}
