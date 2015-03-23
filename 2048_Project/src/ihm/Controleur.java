@@ -86,7 +86,7 @@ public class Controleur extends JFrame
 		boolean mouvPossible = true ;
 		while(!fin) // Tant que l'on peut jouer
 		{
-			int dir = (int)Expectimax.expectimax(plateau.getShortTableau(), 2)[0];
+			int dir = (int)Expectimax.expectimax(plateau.getShortTableau(), 3)[0];
 			
 			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			switch(dir)
@@ -113,7 +113,7 @@ public class Controleur extends JFrame
 				if ( ! plateau.tourSuivant()  )
 				{
 					fin = true ;
-					finDuTest();
+					//finDuTest();
 				}
 			}
 			

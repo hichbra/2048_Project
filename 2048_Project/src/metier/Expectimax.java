@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Expectimax 
 {	
 	public static boolean dernierDeplacement = false ;
-	
+	/*
 	public static double[] expectimax(short[] grille, int profondeur)
 	{
 		double scoreMax = -999999 ;
@@ -73,7 +73,7 @@ public class Expectimax
 			grilleCopie = tourSuivantPrevu(grilleCopie, (short)2, emplacement) ;
 			
 			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 2
-			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie))/* * (9.0/10.0)*/ ;
+			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie))/* * (9.0/10.0) ;
 			
 			// calcul du score des autres grilles
 			if ( profondeur > 0 )
@@ -95,12 +95,87 @@ public class Expectimax
 			if ( profondeur > 0 )
 				score += expectimax(grilleCopie, profondeur-1)[1] ;
 			
-		}*/
+		}
 		
 		score /= (getPositionLibres(grille).size()*2) ; // score = score / nb Appartion Possible ( en comptant les 2 et 4 )
 		//System.out.println(score);
 		
 		return score;
+	}*/
+	
+
+	public static double[] expectimax(short[] grille, int profondeur)
+	{
+		//System.out.println("ahah "+profondeur);
+		double scoreMax = -999999 ;
+		int meilleurDir = 0 ;
+		
+		if ( profondeur != 0 )
+		{
+			for ( int direction = 1 ; direction <= 4 ; direction++ )
+			{
+				short[] grilleCopie = copie(grille);
+				
+				// Direction : 1=gauche | 2=droite | 3=haut | 4=bas
+				// Effectue un mouvement sans faire apparaitre les nouveaux nombres
+				switch(direction)
+				{
+					case 1:
+						grilleCopie = deplacementGauche(grilleCopie);
+						break;
+					case 2:
+						grilleCopie = deplacementDroite(grilleCopie);
+						break;
+					case 3:
+						grilleCopie = deplacementHaut(grilleCopie);
+						break;
+					case 4:
+						grilleCopie = deplacementBas(grilleCopie);
+						break;
+					default:
+						break;
+				}
+				
+				if ( dernierDeplacement )
+				{
+					double score = 0 ; 
+					if ( getPositionLibres(grilleCopie).size() != 0)
+					{
+						for (int emplacement : getPositionLibres(grilleCopie))
+						{						
+							short[] grilleCopieEmpl = copie(grilleCopie);
+							grilleCopieEmpl = tourSuivantPrevu(grilleCopieEmpl, (short)2, emplacement) ;
+							
+							score = expectimax(grilleCopieEmpl, profondeur-1)[0];
+							
+							if ( score > scoreMax )
+							{
+								scoreMax = score;
+								meilleurDir = direction ;
+							}
+						}
+					}
+					else
+					{
+						score = expectimax(grilleCopie, profondeur-1)[0];
+						if ( score > scoreMax )
+						{
+							scoreMax = score;
+							meilleurDir = direction ;
+						}
+					}
+				}
+			}
+		}
+		double eval = eval(grille, profondeur);
+		double[] result = {meilleurDir, eval} ;
+		return result;
+	}
+	
+	private static double eval(short[] grille, int profondeur)
+	{				
+		// calcul du score de la grille en ponderant le score avec la probabilité d'avoir un 2
+		return (regle1(grille)+regle2(grille)+regle3(grille)) ;			
 	}
 
 	private static short[] tourSuivantPrevu(short[] grilleCopie, short nombre, int position)
