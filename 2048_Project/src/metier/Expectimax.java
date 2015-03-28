@@ -104,10 +104,11 @@ public class Expectimax
 	}*/
 	
 
+	
 	public static double[] expectimax(short[] grille, int profondeur)
 	{
-		//System.out.println("ahah "+profondeur);
 		double scoreMax = -999999 ;
+		
 		int meilleurDir = 0 ;
 		
 		if ( profondeur != 0 )

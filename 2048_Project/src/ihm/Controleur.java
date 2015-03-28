@@ -29,6 +29,11 @@ public class Controleur extends JFrame
 	private Plateau plateau ;
 	private ArrayList<JLabel> labelCellules ;
 	
+	private int mooveint = 0 ; 
+	private int scoreint = 0 ;
+	
+	private JLabel labvide2;
+	
 	public Controleur()
 	{
 		super("2048_Project");
@@ -64,7 +69,22 @@ public class Controleur extends JFrame
 			labelCellules.add(lab);
 		}
 		
-		JPanel panel = new JPanel(new GridLayout(4, 4));
+		JPanel panel = new JPanel(new GridLayout(5, 4));
+		
+		JLabel score = new JLabel(String.format(" Score : %s", scoreint));
+		panel.add(score);
+		
+		JLabel labvide1 = new JLabel();
+		panel.add(labvide1);
+		
+		JLabel mouvement = new JLabel(String.format(" Moov : "));
+		panel.add(mouvement);
+		
+		labvide2 = new JLabel();
+		panel.add(labvide2);
+		
+		
+		
 		for ( JLabel label : labelCellules )
 			panel.add(label);
 		
@@ -87,7 +107,8 @@ public class Controleur extends JFrame
 		while(!fin) // Tant que l'on peut jouer
 		{
 			int dir = (int)Expectimax.expectimax(plateau.getShortTableau(), 3)[0];
-			
+			mooveint++;
+			labvide2.setText(String.format("%s", mooveint));
 			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			switch(dir)
 			{
