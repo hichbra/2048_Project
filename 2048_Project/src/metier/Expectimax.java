@@ -2,8 +2,11 @@ package metier;
 
 import java.util.ArrayList;
 
+
 public class Expectimax 
 {	
+	private static int scoreGlobal = 0 ;
+	
 	public static boolean dernierDeplacement = false ;
 	/*
 	public static double[] expectimax(short[] grille, int profondeur)
@@ -170,6 +173,7 @@ public class Expectimax
 		}
 		double eval = eval(grille, profondeur);
 		double[] result = {meilleurDir, eval} ;
+		scoreGlobal += (int) result[1];
 		return result;
 	}
 	
@@ -242,6 +246,7 @@ public class Expectimax
 						{
 							grille[indiceBas] = (short)(grille[indiceBas-4]*2);
 							grille[indiceBas-4] = 0 ;
+							scoreGlobal += (int)(grille[indiceBas]);
 							fusion = true ;
 							
 							if ( grille[indiceBas] != 0 || grille[indiceBas-4] != 0 )
@@ -282,6 +287,7 @@ public class Expectimax
 						{
 							grille[indiceHaut] = (short)(grille[indiceHaut+4]*2);
 							grille[indiceHaut+4] = 0 ;
+							scoreGlobal += (int)(grille[indiceHaut]);
 							fusion = true ;
 							
 							if ( grille[indiceHaut] != 0 || grille[indiceHaut+4] != 0 )
@@ -324,6 +330,7 @@ public class Expectimax
 							{
 								grille[indiceDroite] = (short)(grille[indiceDroite-1]*2);
 								grille[indiceDroite-1] = 0 ;
+								scoreGlobal += (int)(grille[indiceDroite]);
 								fusion = true ;
 								
 								if ( grille[indiceDroite] != 0 || grille[indiceDroite-1] != 0)
@@ -367,6 +374,7 @@ public class Expectimax
 							{
 								grille[indiceGauche-1] = (short)(grille[indiceGauche]*2);
 								grille[indiceGauche] = 0 ;
+								scoreGlobal += (int)(grille[indiceGauche-1]);
 								fusion = true ;
 								
 								if ( grille[indiceGauche] != 0 || grille[indiceGauche-1] != 0 )
@@ -485,6 +493,8 @@ public class Expectimax
 			return 0 ;
 	}*/
 
+	
+	
 	/**
 	 * Maximiser les espaces libres
 	 * @param grille

@@ -75,13 +75,13 @@ public class Controleur extends JFrame
 		JLabel score = new JLabel(String.format(" Score :"));
 		panel.add(score);
 		
-		labvide1 = new JLabel();
+		labvide1 = new JLabel("0");
 		panel.add(labvide1);
 		
 		JLabel mouvement = new JLabel(String.format(" Moov : "));
 		panel.add(mouvement);
 		
-		labvide2 = new JLabel();
+		labvide2 = new JLabel("0");
 		panel.add(labvide2);
 		
 		
@@ -107,9 +107,9 @@ public class Controleur extends JFrame
 		boolean mouvPossible = true ;
 		while(!fin) // Tant que l'on peut jouer
 		{
-			double[] reuslt = Expectimax.expectimax(plateau.getShortTableau(), 3);
+			double[] reuslt = Expectimax.expectimax(plateau.getShortTableau(), 4);
 			int dir = (int)reuslt[0];
-			scoreint += reuslt[1];			
+			scoreint += (int) reuslt[1];			
 			labvide1.setText(String.format("%s", scoreint));			
 			mooveint++;
 			labvide2.setText(String.format("%s", mooveint));
