@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 
 public class Expectimax 
-{	
-	private static int scoreGlobal = 0 ;
-	
+{		
 	public static boolean dernierDeplacement = false ;
 	/*
 	public static double[] expectimax(short[] grille, int profondeur)
@@ -111,76 +109,97 @@ public class Expectimax
 	public static double[] expectimax(short[] grille, int profondeur)
 	{
 		double scoreMax = -999999 ;
-		
 		int meilleurDir = 0 ;
 		
-		if ( profondeur != 0 )
+		
+		for ( int direction = 1 ; direction <= 4 ; direction++ )
 		{
-			for ( int direction = 1 ; direction <= 4 ; direction++ )
+			short[] grilleCopie = copie(grille);
+			
+			// Direction : 1=gauche | 2=droite | 3=haut | 4=bas
+			// Effectue un mouvement sans faire apparaitre les nouveaux nombres
+			switch(direction)
 			{
-				short[] grilleCopie = copie(grille);
-				
-				// Direction : 1=gauche | 2=droite | 3=haut | 4=bas
-				// Effectue un mouvement sans faire apparaitre les nouveaux nombres
-				switch(direction)
+				case 1:
+					grilleCopie = deplacementGauche(grilleCopie);
+					break;
+				case 2:
+					grilleCopie = deplacementDroite(grilleCopie);	
+					break;
+				case 3:
+					grilleCopie = deplacementHaut(grilleCopie);
+					break;
+				case 4:
+					grilleCopie = deplacementBas(grilleCopie);
+					break;
+				default:
+					break;
+			}
+
+			if ( dernierDeplacement )
+			{
+				double score = eval(grilleCopie, profondeur-1) ;
+
+				if ( score > scoreMax )
 				{
-					case 1:
-						grilleCopie = deplacementGauche(grilleCopie);
-						break;
-					case 2:
-						grilleCopie = deplacementDroite(grilleCopie);
-						break;
-					case 3:
-						grilleCopie = deplacementHaut(grilleCopie);
-						break;
-					case 4:
-						grilleCopie = deplacementBas(grilleCopie);
-						break;
-					default:
-						break;
-				}
-				
-				if ( dernierDeplacement )
-				{
-					double score = 0 ; 
-					if ( getPositionLibres(grilleCopie).size() != 0)
-					{
-						for (int emplacement : getPositionLibres(grilleCopie))
-						{						
-							short[] grilleCopieEmpl = copie(grilleCopie);
-							grilleCopieEmpl = tourSuivantPrevu(grilleCopieEmpl, (short)2, emplacement) ;
-							
-							score = expectimax(grilleCopieEmpl, profondeur-1)[0];
-							
-							if ( score > scoreMax )
-							{
-								scoreMax = score;
-								meilleurDir = direction ;
-							}
-						}
-					}
-					else
-					{
-						score = expectimax(grilleCopie, profondeur-1)[0];
-						if ( score > scoreMax )
-						{
-							scoreMax = score;
-							meilleurDir = direction ;
-						}
-					}
+					scoreMax = score;
+					meilleurDir = direction ;
 				}
 			}
 		}
-		double eval = eval(grille, profondeur);
-		double[] result = {meilleurDir, eval} ;
-		scoreGlobal += (int) result[1];
+		
+		double[] result = {meilleurDir, scoreMax} ;
 		return result;
 	}
 	
 	private static double eval(short[] grille, int profondeur)
-	{				
-		// calcul du score de la grille en ponderant le score avec la probabilité d'avoir un 2
-		return (regle1(grille)+regle2(grille)+regle3(grille)) ;			
+	{
+		//System.out.println("Eval profondeur: "+profondeur);
+
+		double score = 0 ;
+		double moyBranche = 0 ;
+		
+		// Calcul des apparitions de 2
+		for (int emplacement : getPositionLibres(grille))
+		{
+			short[] grilleCopie = copie(grille);
+			grilleCopie = tourSuivantPrevu(grilleCopie, (short)2, emplacement) ;
+			
+			if ( profondeur <= 0 )	
+				score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)) ;	// calcul du score de la grille
+			else					
+				moyBranche += expectimax(grilleCopie, profondeur-1)[1] ;					// calcul du score des autres grilles
+			
+			
+			//System.out.println("score emplacement = "+score+" profondeur = "+profondeur );		
+		}
+		
+		// Calcul des apparitions de 4
+		/*for (int emplacement : getPositionLibres(grille))
+		{
+			short[] grilleCopie = copie(grille);
+			grilleCopie = tourSuivantPrevu(grilleCopie, (short)4, emplacement) ;
+			
+			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 4
+			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)) * (1.0/10.0) ;
+			
+			// calcul du score des autres grilles
+			if ( profondeur > 0 )
+				score += expectimax(grilleCopie, profondeur-1)[1] ;
+			
+		}*/
+		if ( profondeur <= 0 )
+		{
+			score /= (getPositionLibres(grille).size()*2) ; // score = score / nb Appartion Possible
+			return score;	
+		}
+		else
+		{
+			moyBranche /= (getPositionLibres(grille).size()*2) ; // branche = branche / nb branche
+			return moyBranche;	
+		}
+		//System.out.println(score);
+		
 	}
 
 	private static short[] tourSuivantPrevu(short[] grilleCopie, short nombre, int position)
@@ -246,7 +265,7 @@ public class Expectimax
 						{
 							grille[indiceBas] = (short)(grille[indiceBas-4]*2);
 							grille[indiceBas-4] = 0 ;
-							scoreGlobal += (int)(grille[indiceBas]);
+							//scoreGlobal += (int)(grille[indiceBas]);
 							fusion = true ;
 							
 							if ( grille[indiceBas] != 0 || grille[indiceBas-4] != 0 )
@@ -287,7 +306,7 @@ public class Expectimax
 						{
 							grille[indiceHaut] = (short)(grille[indiceHaut+4]*2);
 							grille[indiceHaut+4] = 0 ;
-							scoreGlobal += (int)(grille[indiceHaut]);
+							//scoreGlobal += (int)(grille[indiceHaut]);
 							fusion = true ;
 							
 							if ( grille[indiceHaut] != 0 || grille[indiceHaut+4] != 0 )
@@ -330,7 +349,7 @@ public class Expectimax
 							{
 								grille[indiceDroite] = (short)(grille[indiceDroite-1]*2);
 								grille[indiceDroite-1] = 0 ;
-								scoreGlobal += (int)(grille[indiceDroite]);
+								//scoreGlobal += (int)(grille[indiceDroite]);
 								fusion = true ;
 								
 								if ( grille[indiceDroite] != 0 || grille[indiceDroite-1] != 0)
@@ -374,7 +393,7 @@ public class Expectimax
 							{
 								grille[indiceGauche-1] = (short)(grille[indiceGauche]*2);
 								grille[indiceGauche] = 0 ;
-								scoreGlobal += (int)(grille[indiceGauche-1]);
+								//scoreGlobal += (int)(grille[indiceGauche-1]);
 								fusion = true ;
 								
 								if ( grille[indiceGauche] != 0 || grille[indiceGauche-1] != 0 )
