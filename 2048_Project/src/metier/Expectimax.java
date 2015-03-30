@@ -106,7 +106,7 @@ public class Expectimax
 	
 
 	
-	public static double[] expectimax(short[] grille, int profondeur)
+	public static double[] expectimaxDirection(short[] grille, int profondeur)
 	{
 		double scoreMax = -999999 ;
 		int meilleurDir = 0 ;
@@ -138,7 +138,7 @@ public class Expectimax
 
 			if ( dernierDeplacement )
 			{
-				double score = eval(grilleCopie, profondeur-1) ;
+				double score = expectimaxApparition(grilleCopie, profondeur) ;
 
 				if ( score > scoreMax )
 				{
@@ -152,10 +152,8 @@ public class Expectimax
 		return result;
 	}
 	
-	private static double eval(short[] grille, int profondeur)
+	private static double expectimaxApparition(short[] grille, int profondeur)
 	{
-		//System.out.println("Eval profondeur: "+profondeur);
-
 		double score = 0 ;
 		double moyBranche = 0 ;
 		
@@ -166,28 +164,12 @@ public class Expectimax
 			grilleCopie = tourSuivantPrevu(grilleCopie, (short)2, emplacement) ;
 			
 			if ( profondeur <= 0 )	
-				score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)) ;	// calcul du score de la grille
+				score += eval(grilleCopie) ;	// calcul du score de la grille
 			else					
-				moyBranche += expectimax(grilleCopie, profondeur-1)[1] ;					// calcul du score des autres grilles
+				moyBranche += expectimaxDirection(grilleCopie, profondeur-1)[1] ;	// calcul du score des autres grilles
 			
-			
-			//System.out.println("score emplacement = "+score+" profondeur = "+profondeur );		
 		}
 		
-		// Calcul des apparitions de 4
-		/*for (int emplacement : getPositionLibres(grille))
-		{
-			short[] grilleCopie = copie(grille);
-			grilleCopie = tourSuivantPrevu(grilleCopie, (short)4, emplacement) ;
-			
-			// calcul du score de la grille en ponderant le score avec la probabilit� d'avoir un 4
-			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)) * (1.0/10.0) ;
-			
-			// calcul du score des autres grilles
-			if ( profondeur > 0 )
-				score += expectimax(grilleCopie, profondeur-1)[1] ;
-			
-		}*/
 		if ( profondeur <= 0 )
 		{
 			score /= (getPositionLibres(grille).size()*2) ; // score = score / nb Appartion Possible
@@ -198,8 +180,12 @@ public class Expectimax
 			moyBranche /= (getPositionLibres(grille).size()*2) ; // branche = branche / nb branche
 			return moyBranche;	
 		}
-		//System.out.println(score);
 		
+	}
+
+	private static double eval(short[] grilleCopie) 
+	{
+		return ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie));
 	}
 
 	private static short[] tourSuivantPrevu(short[] grilleCopie, short nombre, int position)
