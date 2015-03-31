@@ -34,7 +34,7 @@ public class Controleur extends JFrame
 		super("2048_Project");
 		
 		try {
-			this.file = new FileWriter(new File("test/Prof2.txt"), true);
+			this.file = new FileWriter(new File("test/Prof3.txt"), true);
 		} 
 		catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -86,7 +86,7 @@ public class Controleur extends JFrame
 		boolean mouvPossible = true ;
 		while(!fin) // Tant que l'on peut jouer
 		{
-			int dir = (int)Expectimax.expectimaxDirection(plateau.getShortTableau(), 2)[0];
+			int dir = (int)Expectimax.expectimaxDirection(plateau.getShortTableau(), 3)[0];
 			
 			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			switch(dir)
@@ -300,7 +300,7 @@ public class Controleur extends JFrame
 				if (val > scoreMax) 
 					scoreMax = val ;
 				
-			if (essai <= 100)
+			if (essai <= 50)
 			{
 				file.write("Essai "+essai+": "+scoreMax+"\n");
 				resultat.add(scoreMax);

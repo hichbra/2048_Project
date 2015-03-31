@@ -185,7 +185,7 @@ public class Expectimax
 
 	private static double eval(short[] grilleCopie) 
 	{
-		return ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie));
+		return regleGrad(grilleCopie)+regle3(grilleCopie);//( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie));
 	}
 
 	private static short[] tourSuivantPrevu(short[] grilleCopie, short nombre, int position)
