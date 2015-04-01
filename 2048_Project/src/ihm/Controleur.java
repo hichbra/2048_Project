@@ -34,7 +34,7 @@ public class Controleur extends JFrame
 		super("2048_Project");
 		
 		try {
-			this.file = new FileWriter(new File("test/Prof3.txt"), true);
+			this.file = new FileWriter(new File("test/GradUniq-Prof3.txt"), true);
 		} 
 		catch (IOException e) {
 			// TODO Auto-generated catch block

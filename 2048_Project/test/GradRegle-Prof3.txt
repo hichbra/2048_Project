@@ -1,0 +1,59 @@
+Essai 1: 4096
+Essai 2: 4096
+Essai 3: 4096
+Essai 4: 4096
+Essai 5: 4096
+Essai 6: 2048
+Essai 7: 2048
+Essai 8: 4096
+Essai 9: 4096
+Essai 10: 2048
+Essai 11: 1024
+Essai 12: 8192
+Essai 13: 4096
+Essai 14: 4096
+Essai 15: 4096
+Essai 16: 2048
+Essai 17: 4096
+Essai 18: 2048
+Essai 19: 2048
+Essai 20: 8192
+Essai 21: 2048
+Essai 22: 2048
+Essai 23: 4096
+Essai 24: 4096
+Essai 25: 4096
+Essai 26: 1024
+Essai 27: 2048
+Essai 28: 512
+Essai 29: 8192
+Essai 30: 4096
+Essai 31: 4096
+Essai 32: 2048
+Essai 33: 2048
+Essai 34: 4096
+Essai 35: 2048
+Essai 36: 4096
+Essai 37: 2048
+Essai 38: 2048
+Essai 39: 8192
+Essai 40: 2048
+Essai 41: 2048
+Essai 42: 2048
+Essai 43: 4096
+Essai 44: 2048
+Essai 45: 4096
+Essai 46: 4096
+Essai 47: 2048
+Essai 48: 2048
+Essai 49: 4096
+Essai 50: 1024
+
+Resultat : 
+4096=22
+2048=20
+1024=3
+512=1
+256=0
+128=0
+64=0
