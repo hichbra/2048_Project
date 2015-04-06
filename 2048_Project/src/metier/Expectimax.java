@@ -6,6 +6,13 @@ import java.util.ArrayList;
 public class Expectimax 
 {		
 	public static boolean dernierDeplacement = false ;
+	
+	public static long tempsCopie = 0 ;
+	public static long tempsGradient = 0 ;
+	public static long tempsGetPositionLibre = 0 ;
+	public static long tempsDeplacement = 0 ;
+
+
 	/*
 	public static double[] expectimax(short[] grille, int profondeur)
 	{
@@ -110,7 +117,7 @@ public class Expectimax
 	{
 		double scoreMax = -999999 ;
 		int meilleurDir = 0 ;
-		
+
 		
 		for ( int direction = 1 ; direction <= 4 ; direction++ )
 		{
@@ -118,6 +125,7 @@ public class Expectimax
 			
 			// Direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			// Effectue un mouvement sans faire apparaitre les nouveaux nombres
+			long startTime = System.currentTimeMillis();
 			switch(direction)
 			{
 				case 1:
@@ -135,6 +143,7 @@ public class Expectimax
 				default:
 					break;
 			}
+			tempsDeplacement += System.currentTimeMillis()-startTime;
 
 			if ( dernierDeplacement )
 			{
@@ -147,7 +156,7 @@ public class Expectimax
 				}
 			}
 		}
-		
+
 		double[] result = {meilleurDir, scoreMax} ;
 		return result;
 	}
@@ -156,7 +165,7 @@ public class Expectimax
 	{
 		double score = 0 ;
 		double moyBranche = 0 ;
-		
+
 		// Calcul des apparitions de 2
 		for (int emplacement : getPositionLibres(grille))
 		{
@@ -173,11 +182,13 @@ public class Expectimax
 		if ( profondeur <= 0 )
 		{
 			score /= (getPositionLibres(grille).size()*2) ; // score = score / nb Appartion Possible
+
 			return score;	
 		}
 		else
 		{
 			moyBranche /= (getPositionLibres(grille).size()*2) ; // branche = branche / nb branche
+
 			return moyBranche;	
 		}
 		
@@ -190,6 +201,8 @@ public class Expectimax
 	
 	public static int regleGrad(short[] grille) 
 	{
+		long startTime = System.currentTimeMillis();
+
 		int score = 0 ;
 		
 		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
@@ -213,7 +226,7 @@ public class Expectimax
 			score++ ;
 		}
 		
-		
+		tempsGradient += System.currentTimeMillis()-startTime;
 		return score ;
 	}
 	
@@ -224,7 +237,9 @@ public class Expectimax
 	 */
 	public static int regle3(short[] grille) 
 	{
-		return getPositionLibres(grille).size()*2 ;
+		int score = getPositionLibres(grille).size()*2 ;
+		
+		return score;
 	}
 
 
@@ -253,6 +268,8 @@ public class Expectimax
 	
 	private static ArrayList<Byte> getPositionLibres(short[] grille) 
 	{
+		long startTime = System.currentTimeMillis();
+
 		ArrayList<Byte> caseLibre = new ArrayList<Byte>();
 		
 		for ( byte i = 0 ; i < grille.length ; i++ )
@@ -263,6 +280,8 @@ public class Expectimax
 			}
 		}
 		
+		tempsGetPositionLibre += System.currentTimeMillis()-startTime;
+
 		return caseLibre ;
 	}
 
@@ -436,8 +455,12 @@ public class Expectimax
 		return grille ;
 	}
 
-	private static short[] copie(short[] grille) {
-		return grille.clone();
+	private static short[] copie(short[] grille) 
+	{
+		long startTime = System.currentTimeMillis();
+		short[] grilleCopie = grille.clone();
+		tempsCopie += System.currentTimeMillis()-startTime;
+		return grilleCopie;
 	}
 	
 	

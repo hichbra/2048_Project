@@ -82,11 +82,12 @@ public class Controleur extends JFrame
 	{
 		essai++ ;
 		// Expectimax
+		long startTime = System.currentTimeMillis();
 		boolean fin = false ;
 		boolean mouvPossible = true ;
 		while(!fin) // Tant que l'on peut jouer
 		{
-			int dir = (int)Expectimax.expectimaxDirection(plateau.getShortTableau(), 1)[0];
+			int dir = (int)Expectimax.expectimaxDirection(plateau.getShortTableau(), 2)[0];
 			
 			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			switch(dir)
@@ -113,13 +114,22 @@ public class Controleur extends JFrame
 				if ( ! plateau.tourSuivant()  )
 				{
 					fin = true ;
+					System.out.println("Temps total = "+(System.currentTimeMillis()-startTime)+" ms");
+					System.out.print("Copie="+Expectimax.tempsCopie);
+					System.out.print(" TempsGradient="+Expectimax.tempsGradient);
+					System.out.print(" GetPositionLibre="+Expectimax.tempsGetPositionLibre);
+					System.out.println(" Deplacement="+Expectimax.tempsDeplacement+"\n");
+
+					Expectimax.tempsCopie=0;
+					Expectimax.tempsGradient=0;
+					Expectimax.tempsGetPositionLibre=0;
+					Expectimax.tempsDeplacement=0 ;
 					finDuTest();
 				}
 			}
 			
 			actualiser();
 		}
-
 	}
 
 	/**

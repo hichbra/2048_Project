@@ -243,7 +243,7 @@ public class Plateau
 							break ;
 					}
 				}
-				System.out.println("Fin du jeu = "+finDuJeu);
+				//System.out.println("Fin du jeu = "+finDuJeu);
 			
 				if ( finDuJeu )
 					return false ;
