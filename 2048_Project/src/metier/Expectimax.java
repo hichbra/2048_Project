@@ -187,6 +187,46 @@ public class Expectimax
 	{
 		return regleGrad(grilleCopie);//+regle3(grilleCopie);//( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie));
 	}
+	
+	public static int regleGrad(short[] grille) 
+	{
+		int score = 0 ;
+		
+		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
+		{
+			switch (ligne) {
+			case 0:
+				score += ( grille[ligne]*0 + grille[ligne+1]*1 + grille[ligne+2]*2 + grille[ligne+3]*3 );
+				break;
+			case 4:
+				score += ( grille[ligne]*(-1) + grille[ligne+1]*0 + grille[ligne+2]*1 + grille[ligne+3]*2 );
+				break;
+			case 8:
+				score += ( grille[ligne]*(-2) + grille[ligne+1]*(-1) + grille[ligne+2]*0 + grille[ligne+3]*1 );
+				break;
+			case 12:
+				score += ( grille[ligne]*(-3) + grille[ligne+1]*(-2) + grille[ligne+2]*(-1) + grille[ligne+3]*0 );
+				break;
+			default:
+				break;
+			}
+			score++ ;
+		}
+		
+		
+		return score ;
+	}
+	
+	/**
+	 * Maximiser les espaces libres
+	 * @param grille
+	 * @return score
+	 */
+	public static int regle3(short[] grille) 
+	{
+		return getPositionLibres(grille).size()*2 ;
+	}
+
 
 	private static short[] tourSuivantPrevu(short[] grilleCopie, short nombre, int position)
 	{
@@ -400,35 +440,7 @@ public class Expectimax
 		return grille.clone();
 	}
 	
-	public static int regleGrad(short[] grille) 
-	{
-		int score = 0 ;
-		
-		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
-		{
-			switch (ligne) {
-			case 0:
-				score += ( grille[ligne]*0 + grille[ligne+1]*1 + grille[ligne+2]*2 + grille[ligne+3]*3 );
-				break;
-			case 4:
-				score += ( grille[ligne]*(-1) + grille[ligne+1]*0 + grille[ligne+2]*1 + grille[ligne+3]*2 );
-				break;
-			case 8:
-				score += ( grille[ligne]*(-2) + grille[ligne+1]*(-1) + grille[ligne+2]*0 + grille[ligne+3]*1 );
-				break;
-			case 12:
-				score += ( grille[ligne]*(-3) + grille[ligne+1]*(-2) + grille[ligne+2]*(-1) + grille[ligne+3]*0 );
-				break;
-			default:
-				break;
-			}
-			score++ ;
-		}
-		
-		
-		return score ;
-	}
-
+	
 	/**
 	 * Regle valeur max sur les bords + bonus cases vides
 	 * @param grille
@@ -500,15 +512,6 @@ public class Expectimax
 
 	
 	
-	/**
-	 * Maximiser les espaces libres
-	 * @param grille
-	 * @return score
-	 */
-	public static int regle3(short[] grille) 
-	{
-		return getPositionLibres(grille).size()*2 ;
-	}
 
 	/**
 	 * Ligne/colonne dans l'ordre croissant/décroissant + régularité des cellules
