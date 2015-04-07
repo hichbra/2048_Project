@@ -1,6 +1,7 @@
 package metier;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class Expectimax 
@@ -113,9 +114,9 @@ public class Expectimax
 	
 
 	
-	public static double[] expectimaxDirection(short[] grille, int profondeur)
+	public static float[] expectimaxDirection(short[] grille, int profondeur)
 	{
-		double scoreMax = -999999 ;
+		float scoreMax = -999999 ;
 		int meilleurDir = 0 ;
 
 		
@@ -147,7 +148,7 @@ public class Expectimax
 
 			if ( dernierDeplacement )
 			{
-				double score = expectimaxApparition(grilleCopie, profondeur) ;
+				float score = expectimaxApparition(grilleCopie, profondeur) ;
 
 				if ( score > scoreMax )
 				{
@@ -157,14 +158,14 @@ public class Expectimax
 			}
 		}
 
-		double[] result = {meilleurDir, scoreMax} ;
+		float[] result = {meilleurDir, scoreMax} ;
 		return result;
 	}
 	
-	private static double expectimaxApparition(short[] grille, int profondeur)
+	private static float expectimaxApparition(short[] grille, int profondeur)
 	{
-		double score = 0 ;
-		double moyBranche = 0 ;
+		float score = 0 ;
+		float moyBranche = 0 ;
 
 		// Calcul des apparitions de 2
 		for (int emplacement : getPositionLibres(grille))
@@ -194,16 +195,39 @@ public class Expectimax
 		
 	}
 
-	private static double eval(short[] grilleCopie) 
+	private static float eval(short[] grilleCopie) 
 	{
-		return regleGrad(grilleCopie);//+regle3(grilleCopie);//( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie));
+		/*float lambda = (float) 0.85;
+		if ( getPositionLibres(grilleCopie).size() <= 4)
+			return regle3(grilleCopie)*regleGrad(grilleCopie);//( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie));
+		else*/
+		float max = 0 ;
+		for ( int i : grilleCopie)
+			if ( i > max)
+				max = i;
+		
+			//System.out.println("grad: "+regleGrad(grilleCopie)+" || regle3: "+regle3(grilleCopie));
+			
+			max = (float) (10.0*max);
+			//System.out.println("score= "+(float) (regleGrad(grilleCopie)*(0.1*regle3(grilleCopie))));
+//			if ( getPositionLibres(grilleCopie).size() < 4)
+//				return (float) (regleGrad(grilleCopie)*(0.1*regle3(grilleCopie)));
+//			else
+//				return regleGrad(grilleCopie) ;
+			float lambda =(float) 0.75;
+
+			if ( getPositionLibres(grilleCopie).size() < 4)
+				return (float) (((float)1.0/max)*(1-lambda)*regleGrad(grilleCopie)+lambda*((float)1.0/14.0)*regle3(grilleCopie));
+			else
+				return (float) (((float)1.0/max)*lambda*regleGrad(grilleCopie)+(1-lambda)*((float)1.0/14.0)*regle3(grilleCopie));
+				
 	}
 	
-	public static int regleGrad(short[] grille) 
+	public static float regleGrad(short[] grille) 
 	{
 		long startTime = System.currentTimeMillis();
 
-		int score = 0 ;
+		float score = 0 ;
 		
 		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
 		{
@@ -226,23 +250,36 @@ public class Expectimax
 			score++ ;
 		}
 		
-		tempsGradient += System.currentTimeMillis()-startTime;
-		return score ;
+		
+		int max = 0 ;
+		for ( int i : grille)
+			if ( i > max)
+				max = i;
+//		tempsGradient += System.currentTimeMillis()-startTime;
+		
+		return score;//normalisation(score, 10*max) ;
 	}
-	
+
 	/**
 	 * Maximiser les espaces libres
 	 * @param grille
 	 * @return score
 	 */
-	public static int regle3(short[] grille) 
+	public static float regle3(short[] grille) 
 	{
-		int score = getPositionLibres(grille).size()*2 ;
+		float score = getPositionLibres(grille).size() ;
+		
+		//System.out.println(score);
 		
 		return score;
 	}
 
 
+	private static float normalisation(float score, float max) 
+	{
+		return score/max;
+	}
+	
 	private static short[] tourSuivantPrevu(short[] grilleCopie, short nombre, int position)
 	{
 		 grilleCopie[position] = nombre ;

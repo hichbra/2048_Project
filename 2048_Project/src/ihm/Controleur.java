@@ -74,8 +74,64 @@ public class Controleur extends JFrame
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 		
-		lancerExpectimax();
+		lancerAleatoire();
 		
+	}
+	
+	private void lancerAleatoire() 
+	{
+		System.out.println("Essai = "+essai);
+		essai++ ;
+		// Expectimax
+		long startTime = System.currentTimeMillis();
+		boolean fin = false ;
+		boolean mouvPossible = true ;
+		while(!fin) // Tant que l'on peut jouer
+		{
+		//	int dir = (int)Expectimax.expectimaxDirection(plateau.getShortTableau(), 2)[0];
+			int dir = (int)( Math.random()*( 4 - 1 + 1 ) ) + 1;
+
+			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
+			switch(dir)
+			{
+				case 1:
+					mouvPossible = plateau.gauche();
+					break;
+				case 2:
+					mouvPossible = plateau.droite();
+					break;
+				case 3:
+					mouvPossible = plateau.haut();
+					break;
+				case 4:
+					mouvPossible = plateau.bas();
+					break;
+				default:
+					mouvPossible = false ;
+					break;
+			}
+
+			if ( mouvPossible )
+			{
+				if ( ! plateau.tourSuivant()  )
+				{
+					fin = true ;
+					System.out.println("Temps total = "+(System.currentTimeMillis()-startTime)+" ms");
+					System.out.print("Copie="+Expectimax.tempsCopie);
+					System.out.print(" TempsGradient="+Expectimax.tempsGradient);
+					System.out.print(" GetPositionLibre="+Expectimax.tempsGetPositionLibre);
+					System.out.println(" Deplacement="+Expectimax.tempsDeplacement+"\n");
+
+					Expectimax.tempsCopie=0;
+					Expectimax.tempsGradient=0;
+					Expectimax.tempsGetPositionLibre=0;
+					Expectimax.tempsDeplacement=0 ;
+					finDuTest(2);
+				}
+			}
+			
+			actualiser();
+		}
 	}
 	
 	private void lancerExpectimax() 
@@ -124,7 +180,7 @@ public class Controleur extends JFrame
 					Expectimax.tempsGradient=0;
 					Expectimax.tempsGetPositionLibre=0;
 					Expectimax.tempsDeplacement=0 ;
-					finDuTest();
+					finDuTest(1);
 				}
 			}
 			
@@ -299,7 +355,7 @@ public class Controleur extends JFrame
 	/**
 	 * Permet de Quitter ou de Recommencer � la fin d'une partie
 	 */
-	public void finDuTest() 
+	public void finDuTest(int mode) 
 	{
 		try 
 		{
@@ -310,16 +366,19 @@ public class Controleur extends JFrame
 				if (val > scoreMax) 
 					scoreMax = val ;
 				
-			if (essai <= 50)
+			if (essai <= 100)
 			{
 				file.write("Essai "+essai+": "+scoreMax+"\n");
 				resultat.add(scoreMax);
 				
 				this.plateau.debut();
 				actualiser();
-				lancerExpectimax();
+				if ( mode == 1 )
+					lancerExpectimax();
+				else if ( mode == 2 )
+					lancerAleatoire();
 			}
-			else		
+			else
 			{
 				int nb4096=0, nb2048=0, nb1024=0, nb512=0, nb256=0, nb128=0, nb64=0 ;
 				for ( int i : resultat)
