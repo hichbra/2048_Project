@@ -1,7 +1,6 @@
 package metier;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 
 public class Expectimax 
@@ -255,12 +254,74 @@ public class Expectimax
 		for ( int i : grille)
 			if ( i > max)
 				max = i;
-//		tempsGradient += System.currentTimeMillis()-startTime;
+		tempsGradient += System.currentTimeMillis()-startTime;
 		
 		return score;//normalisation(score, 10*max) ;
 	}
 
-	/**
+	/*
+	public static float regleGrad(short[] grille) 
+	{
+		long startTime = System.currentTimeMillis();
+
+		float score = 0 ;
+		
+		
+		HashMap<Short, Byte> correspondanceNorme = new HashMap<Short, Byte>();
+
+		short[] rev = new short[16];
+		
+		Arrays.sort(grille) ;
+		
+		for (int i=0; i<= 16-1; i=i+1)
+            rev[i] = grille[16-1-i];
+		
+	
+		byte valeurNormalisee = 16;
+		short valeurDeLaNorme = rev[0] ;
+		correspondanceNorme.put(valeurDeLaNorme, valeurNormalisee);
+		
+		for( int i = 1 ; i < grille.length ; i++ )
+		{
+			if ( rev[i] < valeurDeLaNorme )
+			{
+				valeurNormalisee-- ;
+				valeurDeLaNorme = rev[i];
+			}
+		
+			correspondanceNorme.put(rev[i], valeurNormalisee);
+			rev[i] = (short) valeurNormalisee ;
+		}
+		
+	
+		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
+		{
+			switch (ligne) {
+			case 0:
+				score += ( correspondanceNorme.get(grille[ligne])*3 + grille[ligne+1]*4 + grille[ligne+2]*5 + grille[ligne+3]*6 );
+				break;
+			case 4:
+				score += ( correspondanceNorme.get(grille[ligne])*(2) + grille[ligne+1]*3 + grille[ligne+2]*4 + grille[ligne+3]*5 );
+				break;
+			case 8:
+				score += ( correspondanceNorme.get(grille[ligne])*(1) + grille[ligne+1]*(2) + grille[ligne+2]*3 + grille[ligne+3]*4 );
+				break;
+			case 12:
+				score += ( correspondanceNorme.get(grille[ligne])*(0) + grille[ligne+1]*(1) + grille[ligne+2]*(2) + grille[ligne+3]*3 );
+				break;
+			default:
+				break;
+			}
+			score++ ;
+		}
+		
+		tempsGradient += System.currentTimeMillis()-startTime;
+		
+		return (float) (score/10.0*(16*48));//normalisation(score, 10*max) ;
+	}
+	*/
+	
+	 /**
 	 * Maximiser les espaces libres
 	 * @param grille
 	 * @return score
