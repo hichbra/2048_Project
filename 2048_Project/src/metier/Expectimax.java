@@ -1,6 +1,8 @@
 package metier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 
 public class Expectimax 
@@ -200,7 +202,7 @@ public class Expectimax
 		if ( getPositionLibres(grilleCopie).size() <= 4)
 			return regle3(grilleCopie)*regleGrad(grilleCopie);//( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie));
 		else*/
-		float max = 0 ;
+		/*float max = 0 ;
 		for ( int i : grilleCopie)
 			if ( i > max)
 				max = i;
@@ -219,9 +221,15 @@ public class Expectimax
 				return (float) (((float)1.0/max)*(1-lambda)*regleGrad(grilleCopie)+lambda*((float)1.0/14.0)*regle3(grilleCopie));
 			else
 				return (float) (((float)1.0/max)*lambda*regleGrad(grilleCopie)+(1-lambda)*((float)1.0/14.0)*regle3(grilleCopie));
-				
+		*/
+		/*System.out.print("origin :");
+		for(int i : grilleCopie)
+			System.out.print(i+" ");
+		System.out.println("Grad="+regleGrad(grilleCopie)+" ---> "+regleGradN(grilleCopie));*/
+		return (float) (regleGradN(grilleCopie)+0.5*(regle3(grilleCopie)/16));
 	}
 	
+	/*
 	public static float regleGrad(short[] grille) 
 	{
 		long startTime = System.currentTimeMillis();
@@ -259,38 +267,37 @@ public class Expectimax
 		return score;//normalisation(score, 10*max) ;
 	}
 
-	/*
-	public static float regleGrad(short[] grille) 
+	*/
+	public static float regleGradN(short[] grille) 
 	{
 		long startTime = System.currentTimeMillis();
 
 		float score = 0 ;
 		
-		
 		HashMap<Short, Byte> correspondanceNorme = new HashMap<Short, Byte>();
-
-		short[] rev = new short[16];
+		short[] grilleCopie = copie(grille);
+		short[] tableauTriee = new short[16];
 		
-		Arrays.sort(grille) ;
+		Arrays.sort(grilleCopie) ;
 		
 		for (int i=0; i<= 16-1; i=i+1)
-            rev[i] = grille[16-1-i];
+			tableauTriee[i] = grilleCopie[16-1-i];
 		
 	
 		byte valeurNormalisee = 16;
-		short valeurDeLaNorme = rev[0] ;
+		short valeurDeLaNorme = tableauTriee[0] ;
 		correspondanceNorme.put(valeurDeLaNorme, valeurNormalisee);
 		
 		for( int i = 1 ; i < grille.length ; i++ )
 		{
-			if ( rev[i] < valeurDeLaNorme )
+			if ( tableauTriee[i] < valeurDeLaNorme )
 			{
 				valeurNormalisee-- ;
-				valeurDeLaNorme = rev[i];
+				valeurDeLaNorme = tableauTriee[i];
 			}
 		
-			correspondanceNorme.put(rev[i], valeurNormalisee);
-			rev[i] = (short) valeurNormalisee ;
+			correspondanceNorme.put(tableauTriee[i], valeurNormalisee);
+			tableauTriee[i] = (short) valeurNormalisee ;
 		}
 		
 	
@@ -316,10 +323,13 @@ public class Expectimax
 		}
 		
 		tempsGradient += System.currentTimeMillis()-startTime;
-		
-		return (float) (score/10.0*(16*48));//normalisation(score, 10*max) ;
+		/*System.out.print("nv :");
+		for(int i : grille)
+			System.out.print(i+" ");*/
+		//System.out.println((score/(16.0*48.0)));
+		return (float) (score/(16.0*48.0));//normalisation(score, 10*max) ;
+	
 	}
-	*/
 	
 	 /**
 	 * Maximiser les espaces libres
