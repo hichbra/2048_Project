@@ -17,79 +17,99 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import metier.Expectimax;
+import metier.MonteCarlo;
 import metier.Plateau;
 
 @SuppressWarnings("serial")
 public class Controleur extends JFrame
 {
-	public static int essai = 0 ;
-	public static ArrayList<Integer> resultat = new ArrayList<Integer>() ;
+	public static int essai ;
+	public int nbEssai ;
+	public ArrayList<Integer> resultat ;
+	public boolean logMode ;
+	
+	public int profondeur ;
 	
 	private FileWriter file ;
 	private Plateau plateau ;
 	private ArrayList<JLabel> labelCellules ;
 	
-	public Controleur()
+	public Controleur(boolean log, String nomFichierLog, boolean graphique, int methode, int nbEssai, int prof)
 	{
 		super("2048_Project");
 		
-		try {
-			this.file = new FileWriter(new File("test/Prof2-test.txt"), true);
-		} 
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		this.logMode = log ;
+		essai = 1 ;
+		this.nbEssai = nbEssai ;
+		this.resultat = new ArrayList<Integer>() ;
+		this.profondeur = prof ;
+		
+		if ( log )
+		{
+			try {
+				this.file = new FileWriter(new File(nomFichierLog), true);
+			} 
+			catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		
 		this.plateau = new Plateau();
-		this.plateau.debut();
-			
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.addKeyListener(new ControleurListener());
 		
-		this.labelCellules = new ArrayList<JLabel>();
+		if ( graphique )
+		{	
+			this.plateau.debut();
+			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.addKeyListener(new ControleurListener());
+			
+			this.labelCellules = new ArrayList<JLabel>();
+			
+			JLabel lab ;
+			for ( int cellule : plateau.getCellules() )
+			{
+				lab = new JLabel();
+				
+				if ( cellule != 0 )
+					lab.setText(cellule+"");
+				else
+					lab.setText("");
+				
+				apparenceLabel(lab);
+				labelCellules.add(lab);
+			}
+			
+			JPanel panel = new JPanel(new GridLayout(4, 4));
+			for ( JLabel label : labelCellules )
+				panel.add(label);
+			
+			this.add(panel);
+			this.pack();
+			
+			this.setLocationRelativeTo(null);
+			this.setVisible(true);
 		
-		JLabel lab ;
-		for ( int cellule : plateau.getCellules() )
-		{
-			lab = new JLabel();
-			
-			if ( cellule != 0 )
-				lab.setText(cellule+"");
-			else
-				lab.setText("");
-			
-			apparenceLabel(lab);
-			labelCellules.add(lab);
+			if ( methode == 1 )
+				lancerExpectimax();
+			else if ( methode == 2 )
+				lancerMonteCarlo();
+			else if ( methode == 3 )
+				lancerAleatoire();
 		}
-		
-		JPanel panel = new JPanel(new GridLayout(4, 4));
-		for ( JLabel label : labelCellules )
-			panel.add(label);
-		
-		this.add(panel);
-		this.pack();
-		
-		this.setLocationRelativeTo(null);
-		this.setVisible(true);
-		
-		lancerExpectimax();
-		
+		else
+			this.plateau.modeConsole(methode, prof, essai, nbEssai, logMode, file, resultat);
+
 	}
 	
-	private void lancerAleatoire() 
+	private void lancerMonteCarlo() 
 	{
-		System.out.println("Essai = "+essai);
-		essai++ ;
-		// Expectimax
 		long startTime = System.currentTimeMillis();
 		boolean fin = false ;
 		boolean mouvPossible = true ;
 		while(!fin) // Tant que l'on peut jouer
 		{
-		//	int dir = (int)Expectimax.expectimaxDirection(plateau.getShortTableau(), 2)[0];
-			int dir = (int)( Math.random()*( 4 - 1 + 1 ) ) + 1;
+			int dir = MonteCarlo.monteCarlo(plateau.getShortTableau()) ;
 
 			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			switch(dir)
@@ -134,16 +154,67 @@ public class Controleur extends JFrame
 		}
 	}
 	
+	private void lancerAleatoire() 
+	{
+		long startTime = System.currentTimeMillis();
+		boolean fin = false ;
+		boolean mouvPossible = true ;
+		while(!fin) // Tant que l'on peut jouer
+		{
+			int dir = (int)( Math.random()*( 4 - 1 + 1 ) ) + 1;
+
+			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
+			switch(dir)
+			{
+				case 1:
+					mouvPossible = plateau.gauche();
+					break;
+				case 2:
+					mouvPossible = plateau.droite();
+					break;
+				case 3:
+					mouvPossible = plateau.haut();
+					break;
+				case 4:
+					mouvPossible = plateau.bas();
+					break;
+				default:
+					mouvPossible = false ;
+					break;
+			}
+
+			if ( mouvPossible )
+			{
+				if ( ! plateau.tourSuivant()  )
+				{
+					fin = true ;
+					System.out.println("Temps total = "+(System.currentTimeMillis()-startTime)+" ms");
+					System.out.print("Copie="+Expectimax.tempsCopie);
+					System.out.print(" TempsGradient="+Expectimax.tempsGradient);
+					System.out.print(" GetPositionLibre="+Expectimax.tempsGetPositionLibre);
+					System.out.println(" Deplacement="+Expectimax.tempsDeplacement+"\n");
+
+					Expectimax.tempsCopie=0;
+					Expectimax.tempsGradient=0;
+					Expectimax.tempsGetPositionLibre=0;
+					Expectimax.tempsDeplacement=0 ;
+					finDuTest(3);
+				}
+			}
+			
+			actualiser();
+		}
+	}
+	
 	private void lancerExpectimax() 
 	{
-		essai++ ;
 		// Expectimax
 		long startTime = System.currentTimeMillis();
 		boolean fin = false ;
 		boolean mouvPossible = true ;
 		while(!fin) // Tant que l'on peut jouer
 		{
-			int dir = (int)Expectimax.expectimaxDirection(plateau.getShortTableau(), 3)[0];
+			int dir = (int)Expectimax.expectimaxDirection(plateau.getShortTableau(), profondeur)[0];
 			
 			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			switch(dir)
@@ -180,6 +251,7 @@ public class Controleur extends JFrame
 					Expectimax.tempsGradient=0;
 					Expectimax.tempsGetPositionLibre=0;
 					Expectimax.tempsDeplacement=0 ;
+
 					finDuTest(1);
 				}
 			}
@@ -334,7 +406,7 @@ public class Controleur extends JFrame
 				scoreMax = val ;
 			
 		String[] options = {"Recommencer", "Expectimax", "Quitter"};
-		int choix = JOptionPane.showOptionDialog(null,  "C'est terminï¿½. Score Max: "+scoreMax, "Fin du Jeu", JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, "Recommencer") ;
+		int choix = JOptionPane.showOptionDialog(null,  "C'est terminé. Score Max: "+scoreMax, "Fin du Jeu", JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, "Recommencer") ;
 	
 		if(choix == 0 )
 		{
@@ -366,62 +438,78 @@ public class Controleur extends JFrame
 				if (val > scoreMax) 
 					scoreMax = val ;
 				
-			if (essai <= 100)
+			if (essai <= nbEssai)
 			{
-				file.write("Essai "+essai+": "+scoreMax+"\n");
-				resultat.add(scoreMax);
+				if ( logMode )
+				{
+					file.write("Essai "+essai+": "+scoreMax+"\n");
+					resultat.add(scoreMax);
+				}
+				essai++ ;
 				
 				this.plateau.debut();
 				actualiser();
 				if ( mode == 1 )
 					lancerExpectimax();
 				else if ( mode == 2 )
+					lancerMonteCarlo();
+				else if ( mode == 3 )
 					lancerAleatoire();
 			}
 			else
 			{
-				int nb4096=0, nb2048=0, nb1024=0, nb512=0, nb256=0, nb128=0, nb64=0 ;
-				for ( int i : resultat)
+				if ( logMode )
 				{
-					switch (i) 
+					int nb16384=0, nb8192=0, nb4096=0, nb2048=0, nb1024=0, nb512=0, nb256=0, nb128=0, nb64=0 ;
+					for ( int i : resultat)
 					{
-						case 4096:
-							nb4096++;
-							break;
-						case 2048:
-							nb2048++;
-							break;
-						case 1024:
-							nb1024++;
-							break;
-						case 512:
-							nb512++;
-							break;
-						case 256:
-							nb256++;
-							break;
-						case 128:
-							nb128++;
-							break;
-						case 64:
-							nb64++;
-							break;
-						default:
-							break;
+						switch (i) 
+						{
+							case 16384:
+								nb16384++;
+								break;
+							case 8192:
+								nb8192++;
+								break;
+							case 4096:
+								nb4096++;
+								break;
+							case 2048:
+								nb2048++;
+								break;
+							case 1024:
+								nb1024++;
+								break;
+							case 512:
+								nb512++;
+								break;
+							case 256:
+								nb256++;
+								break;
+							case 128:
+								nb128++;
+								break;
+							case 64:
+								nb64++;
+								break;
+							default:
+								break;
+						}
 					}
+					
+					file.write("\nResultat : ");
+					file.write("\n16384="+nb16384);
+					file.write("\n8192="+nb8192);
+					file.write("\n4096="+nb4096);
+					file.write("\n2048="+nb2048);
+					file.write("\n1024="+nb1024);
+					file.write("\n512="+nb512);
+					file.write("\n256="+nb256);
+					file.write("\n128="+nb128);
+					file.write("\n64="+nb64);
+					
+					file.close();
 				}
-				
-				file.write("\nResultat : ");
-				file.write("\n4096="+nb4096);
-				file.write("\n2048="+nb2048);
-				file.write("\n1024="+nb1024);
-				file.write("\n512="+nb512);
-				file.write("\n256="+nb256);
-				file.write("\n128="+nb128);
-				file.write("\n64="+nb64);
-				
-				file.close();
-
 				System.exit(0);
 			}
 			
@@ -433,17 +521,152 @@ public class Controleur extends JFrame
 
 	public static void main(String[] args)
 	{
-		if ( args.length == 0 )
-			new Controleur() ;
-		else if ( args[0].equals("-c"))
-		{
-			Plateau p = new Plateau() ;
-			p.modeConsole();			
-		}
-		else
-			System.out.println("Cette Argument n'existe pas.\nUsage:\t-c = Mode Console");
-		
-	}
+		args = new String[4];
+		args[0] = "-l";
+		args[1] = "mc.txt";
+		args[2] = "-m";
+		args[3] = "1";
 
+		
+		
+		boolean log = false ;
+		String nomFichierLog = null;
+		boolean graphique = true;
+		int methode = 0 ;
+		int nbEssai = 100;
+		int profondeur = 2;
+		
+		for (int i = 0 ; i < args.length ; i++)
+		{
+			if ( args[i].equals("-l") )
+			{
+				log = true ;
+				i++;
+				if ( i < args.length && ! args[i].contains("-") )
+					nomFichierLog = args[i];
+				else
+				{
+					System.out.println("Erreur !\nUsage:\tlog : -l <nom de fichier>");
+					System.exit(1);
+				}
+			}
+			else if ( args[i].equals("-c") )
+				graphique = false ;
+			else if ( args[i].equals("-e") )
+			{
+				if ( methode == 0 )
+				{
+					methode = 1;
+					i++;
+					if ( i < args.length &&  ! args[i].contains("-"))
+					{
+						try
+						{
+							nbEssai = Integer.parseInt(args[i]);
+							i++;
+							if (  i < args.length && ! args[i].contains("-"))
+							{
+								try
+								{
+									profondeur = Integer.parseInt(args[i]);
+								}
+								catch(NumberFormatException e)
+								{
+									System.out.println("Erreur !\nPronfondeur pour Expectimax invalide");
+									System.exit(6);
+								}
+							}
+							else
+							{
+								System.out.println("Erreur !\nUsage:\tExpectimax: -e <nbEssai> <profondeur>");
+								System.exit(8);
+							}
+						
+						}
+						catch(NumberFormatException e)
+						{
+							System.out.println("Erreur !\nNombre d'essai invalide pour Expectimax invalide");
+							System.exit(5);
+						} 
+					}
+					else
+					{
+						System.out.println("Erreur !\nUsage:\tExpectimax: -e <nbEssai> <profondeur>");
+						System.exit(7);
+					}
+				}
+				else
+				{
+					System.out.println("Erreur !\nVous ne pouvez pas cumuler plusieurs méthodes");
+					System.exit(2);
+				}
+				
+			}
+			else if ( args[i].equals("-m") )
+			{
+				if ( methode == 0 )
+				{
+					methode = 2;
+					i++;
+					if ( i < args.length &&  ! args[i].contains("-"))
+					{
+						try
+						{
+							nbEssai = Integer.parseInt(args[i]);
+						}
+						catch(NumberFormatException e){System.out.println("Erreur !\nNombre d'essai invalide pour Monte-Carlo invalide");
+						System.exit(11);}
+					}
+				}
+				else
+				{
+					System.out.println("Erreur !\nUsage:\tMonte-Carlo: -a <nbEssai>");
+					System.exit(9);
+				}
+			}
+			else if ( args[i].equals("-a") )
+			{
+				if ( methode == 0 )
+				{
+					methode = 3;
+					i++;
+					if ( i < args.length &&  ! args[i].contains("-"))
+					{
+						try
+						{
+							nbEssai = Integer.parseInt(args[i]);
+						}
+						catch(NumberFormatException e){System.out.println("Erreur !\nNombre d'essai invalide pour Aleatoire invalide");
+						System.exit(10);}
+					}
+				}
+				else
+				{
+					System.out.println("Erreur !\nUsage:\tAleatoire: -a <nbEssai>");
+					System.exit(9);
+				}
+			}
+			else
+			{
+				System.out.println("Cette Argument n'existe pas.\nUsage:\t-c = Mode Console\n\t-l <fichier> = logs\n\t-e <nbEssai> <profondeur> = Expectimax\n\t-m <nbEssai> = Monte-Carlo\n\t-a = Aleatoire <nbEssai>");
+				System.exit(4);
+			}
+			
+		}
+		
+		if ( log && methode == 0)
+		{
+			System.out.println("Erreur !\nVous devez appliquée une méthode pour faire des logs");
+			System.exit(6);
+		}
+		
+		new Controleur(log, nomFichierLog, graphique, methode, nbEssai, profondeur) ;
+	
+	}
+	/*
+	-g graphique
+	-e expectimax
+	-l log suivie du nomfichier
+	*/
 
 }

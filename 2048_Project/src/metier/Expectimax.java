@@ -14,106 +14,6 @@ public class Expectimax
 	public static long tempsGetPositionLibre = 0 ;
 	public static long tempsDeplacement = 0 ;
 
-
-	/*
-	public static double[] expectimax(short[] grille, int profondeur)
-	{
-		double scoreMax = -999999 ;
-		int meilleurDir = 0 ;
-		
-		if (profondeur != 1)
-			System.out.println();
-		else
-		{
-			for ( int direction = 1 ; direction <= 4 ; direction++ )
-			{
-				short[] grilleCopie = copie(grille);
-				
-				// Direction : 1=gauche | 2=droite | 3=haut | 4=bas
-				// Effectue un mouvement sans faire apparaitre les nouveaux nombres
-				switch(direction)
-				{
-					case 1:
-						grilleCopie = deplacementGauche(grilleCopie);
-						meilleurDir = 1;
-						break;
-					case 2:
-						grilleCopie = deplacementDroite(grilleCopie);
-						meilleurDir = 2;	
-						break;
-					case 3:
-						grilleCopie = deplacementHaut(grilleCopie);
-						meilleurDir = 3;
-						break;
-					case 4:
-						grilleCopie = deplacementBas(grilleCopie);
-						meilleurDir = 4;
-						break;
-					default:
-						break;
-				}
-				
-				if ( dernierDeplacement )
-				{
-					double score = eval(grilleCopie, profondeur-1) ;
-					//System.out.println("score direction = "+score );		
-					if ( score > scoreMax )
-					{
-						scoreMax = score;
-						meilleurDir = direction ;
-					}
-				}
-			}
-		}
-		
-		double[] result = {meilleurDir, scoreMax} ;
-		return result;
-	}
-	
-	private static double eval(short[] grille, int profondeur)
-	{
-		//System.out.println("Eval profondeur: "+profondeur);
-
-		double score = 0 ;
-		
-		// Calcul des apparitions de 2
-		for (int emplacement : getPositionLibres(grille))
-		{
-			short[] grilleCopie = copie(grille);
-			grilleCopie = tourSuivantPrevu(grilleCopie, (short)2, emplacement) ;
-			
-			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 2
-			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie))/* * (9.0/10.0) ;
-			
-			// calcul du score des autres grilles
-			if ( profondeur > 0 )
-				score += expectimax(grilleCopie, profondeur-1)[1] ;
-			
-			//System.out.println("score emplacement = "+score+" profondeur = "+profondeur );		
-		}
-		
-		// Calcul des apparitions de 4
-		/*for (int emplacement : getPositionLibres(grille))
-		{
-			short[] grilleCopie = copie(grille);
-			grilleCopie = tourSuivantPrevu(grilleCopie, (short)4, emplacement) ;
-			
-			// calcul du score de la grille en ponderant le score avec la probabilitï¿½ d'avoir un 4
-			score += ( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie)) * (1.0/10.0) ;
-			
-			// calcul du score des autres grilles
-			if ( profondeur > 0 )
-				score += expectimax(grilleCopie, profondeur-1)[1] ;
-			
-		}
-		
-		score /= (getPositionLibres(grille).size()*2) ; // score = score / nb Appartion Possible ( en comptant les 2 et 4 )
-		//System.out.println(score);
-		
-		return score;
-	}*/
-	
-
 	
 	public static float[] expectimaxDirection(short[] grille, int profondeur)
 	{
@@ -198,76 +98,11 @@ public class Expectimax
 
 	private static float eval(short[] grilleCopie) 
 	{
-		/*float lambda = (float) 0.85;
-		if ( getPositionLibres(grilleCopie).size() <= 4)
-			return regle3(grilleCopie)*regleGrad(grilleCopie);//( regle1(grilleCopie)+regle2(grilleCopie)+regle3(grilleCopie));
-		else*/
-		/*float max = 0 ;
-		for ( int i : grilleCopie)
-			if ( i > max)
-				max = i;
 		
-			//System.out.println("grad: "+regleGrad(grilleCopie)+" || regle3: "+regle3(grilleCopie));
-			
-			max = (float) (10.0*max);
-			//System.out.println("score= "+(float) (regleGrad(grilleCopie)*(0.1*regle3(grilleCopie))));
-//			if ( getPositionLibres(grilleCopie).size() < 4)
-//				return (float) (regleGrad(grilleCopie)*(0.1*regle3(grilleCopie)));
-//			else
-//				return regleGrad(grilleCopie) ;
-			float lambda =(float) 0.75;
-
-			if ( getPositionLibres(grilleCopie).size() < 4)
-				return (float) (((float)1.0/max)*(1-lambda)*regleGrad(grilleCopie)+lambda*((float)1.0/14.0)*regle3(grilleCopie));
-			else
-				return (float) (((float)1.0/max)*lambda*regleGrad(grilleCopie)+(1-lambda)*((float)1.0/14.0)*regle3(grilleCopie));
-		*/
-		/*System.out.print("origin :");
-		for(int i : grilleCopie)
-			System.out.print(i+" ");
-		System.out.println("Grad="+regleGrad(grilleCopie)+" ---> "+regleGradN(grilleCopie));*/
-		return (float) (regleGradN(grilleCopie)+0.5*(regle3(grilleCopie)/16));
-	}
-	
-	/*
-	public static float regleGrad(short[] grille) 
-	{
-		long startTime = System.currentTimeMillis();
-
-		float score = 0 ;
-		
-		for( int ligne = 0 ; ligne <= 12 ; ligne += 4)
-		{
-			switch (ligne) {
-			case 0:
-				score += ( grille[ligne]*0 + grille[ligne+1]*1 + grille[ligne+2]*2 + grille[ligne+3]*3 );
-				break;
-			case 4:
-				score += ( grille[ligne]*(-1) + grille[ligne+1]*0 + grille[ligne+2]*1 + grille[ligne+3]*2 );
-				break;
-			case 8:
-				score += ( grille[ligne]*(-2) + grille[ligne+1]*(-1) + grille[ligne+2]*0 + grille[ligne+3]*1 );
-				break;
-			case 12:
-				score += ( grille[ligne]*(-3) + grille[ligne+1]*(-2) + grille[ligne+2]*(-1) + grille[ligne+3]*0 );
-				break;
-			default:
-				break;
-			}
-			score++ ;
-		}
-		
-		
-		int max = 0 ;
-		for ( int i : grille)
-			if ( i > max)
-				max = i;
-		tempsGradient += System.currentTimeMillis()-startTime;
-		
-		return score;//normalisation(score, 10*max) ;
+		float lamda = (float)0.8;//((getPositionLibres(grilleCopie).size()/1.6)/10);
+		return (float) (lamda*regleGradN(grilleCopie)+(1-lamda)*(regle3(grilleCopie)/16));
 	}
 
-	*/
 	public static float regleGradN(short[] grille) 
 	{
 		long startTime = System.currentTimeMillis();
@@ -323,10 +158,7 @@ public class Expectimax
 		}
 		
 		tempsGradient += System.currentTimeMillis()-startTime;
-		/*System.out.print("nv :");
-		for(int i : grille)
-			System.out.print(i+" ");*/
-		//System.out.println((score/(16.0*48.0)));
+
 		return (float) (score/(16.0*48.0));//normalisation(score, 10*max) ;
 	
 	}
@@ -345,12 +177,6 @@ public class Expectimax
 		return score;
 	}
 
-
-	private static float normalisation(float score, float max) 
-	{
-		return score/max;
-	}
-	
 	private static short[] tourSuivantPrevu(short[] grilleCopie, short nombre, int position)
 	{
 		 grilleCopie[position] = nombre ;
@@ -358,21 +184,6 @@ public class Expectimax
 		 return grilleCopie ;
 	}
 
-	/*private static byte[] getPositionLibres(short[] grille) 
-	{
-		byte[] caseLibre = new byte[16];
-		
-		for ( byte i = 0 , j = 0; i < grille.length ; i++ )
-		{
-			if ( grille[i] == 0 )
-			{
-				caseLibre[j] = i ;
-				j++;
-			}
-		}
-		
-		return caseLibre ;
-	}*/
 	
 	private static ArrayList<Byte> getPositionLibres(short[] grille) 
 	{
@@ -649,7 +460,7 @@ public class Expectimax
 	 * @param grille
 	 * @return score
 	 */
-	public static int regle2(short[] grille)
+	public static float regle2(short[] grille)
 	{		
 		int score = 0 ;
 		
@@ -658,7 +469,7 @@ public class Expectimax
 		{
 			if ( ( (grille[ligne+1] == grille[ligne+0] || grille[ligne+1] == grille[ligne+0]*2) && (grille[ligne+2] == grille[ligne+1] || grille[ligne+2] == grille[ligne+1]*2) && ( grille[ligne+3] == grille[ligne+2] || grille[ligne+3] == grille[ligne+2]*2) ) // ligne croissante
 					|| ( (grille[ligne+3] == grille[ligne+2] || grille[ligne+3]*2 == grille[ligne+2]) && (grille[ligne+2] == grille[ligne+1] || grille[ligne+2]*2 == grille[ligne+1]) && ( grille[ligne+1] == grille[ligne+0] || grille[ligne+1]*2 == grille[ligne+0]) ) ) // ligne decroissante
-				score+= 3 ;
+				score+=1 ;
 		}
 		
 		// Colonne
@@ -666,11 +477,11 @@ public class Expectimax
 		{
 			if ( ( (grille[colonne] == grille[colonne+4] || grille[colonne] == grille[colonne+4]*2) && (grille[colonne+4] == grille[colonne+8] || grille[colonne+4] == grille[colonne+8]*2) && (grille[colonne+8] == grille[colonne+12] || grille[colonne+8] == grille[colonne+12]*2 ) ) // ligne croissante
 					|| ( (grille[colonne] == grille[colonne+4] || grille[colonne]*2 == grille[colonne+4]) && (grille[colonne+4] == grille[colonne+8] || grille[colonne+4]*2 == grille[colonne+8]) && (grille[colonne+8] == grille[colonne+12] || grille[colonne+8]*2 == grille[colonne+12] )) ) // ligne decroissante
-				score+=3 ;
+				score+=1 ;
 		}
 				
 		
-		return score;
+		return score/8;
 	}
 
 	/**
@@ -678,7 +489,7 @@ public class Expectimax
 	 * @param grille
 	 * @return score
 	 */
-	public static int regle1(short[] grille) 
+	public static float regle1(short[] grille) 
 	{	
 		// Avoir une regularité ENTRE les lignes ( si croissant, alors les autre lignes croissant, sinon perte de point. La ligne de réference utilisé est celle de la plus grande valeur)
 
@@ -698,7 +509,7 @@ public class Expectimax
 				score++ ;
 		}
 		
-		return score;
+		return score/8;
 	}
 
 

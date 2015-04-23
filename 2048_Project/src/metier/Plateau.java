@@ -1,5 +1,7 @@
 package metier;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -35,8 +37,10 @@ public class Plateau
 	
 	/**
 	 * Lance la partie en mode Console
+	 * @param resultat 
+	 * @param file 
 	 */
-	public void modeConsole()
+	public void modeConsole(int methode, int prof, int essai, int nbEssai, boolean log, FileWriter file, ArrayList<Integer> resultat)
 	{
 		debut();
 		Scanner scanner = new Scanner(System.in);
@@ -51,40 +55,137 @@ public class Plateau
             System.out.println("(D) - Droite");
             System.out.println("Votre Action:\t");
 
-			String mouvement = scanner.nextLine();
-			
-			if ( mouvement.equals("Q") )
+            String mouvement = "" ;
+            if ( methode == 0 )
+            {
+            	mouvement = scanner.nextLine();
+            }
+            else if ( methode == 1 )
+            {
+            	int dir = (int)Expectimax.expectimaxDirection(getShortTableau(), prof)[0];
+            	switch(dir)
+    			{
+    				case 1:
+    					mouvement = "Q";
+    					break;
+    				case 2:
+    					mouvement = "D";
+    					break;
+    				case 3:
+    					mouvement = "Z";
+    					break;
+    				case 4:
+    					mouvement = "S";
+    					break;
+    				default:
+    					mouvement = "";
+    					break;
+    			}
+            }
+            else if ( methode == 2 )
+            {
+            	int dir = (int) MonteCarlo.monteCarlo(getShortTableau());
+            	switch(dir)
+    			{
+    				case 1:
+    					mouvement = "Q";
+    					break;
+    				case 2:
+    					mouvement = "D";
+    					break;
+    				case 3:
+    					mouvement = "Z";
+    					break;
+    				case 4:
+    					mouvement = "S";
+    					break;
+    				default:
+    					mouvement = "";
+    					break;
+    			}
+            }
+            else if ( methode == 3 )
+            {
+            	int dir = (int)( Math.random()*( 4 - 1 + 1 ) ) + 1;
+            	switch(dir)
+    			{
+    				case 1:
+    					mouvement = "Q";
+    					break;
+    				case 2:
+    					mouvement = "D";
+    					break;
+    				case 3:
+    					mouvement = "Z";
+    					break;
+    				case 4:
+    					mouvement = "S";
+    					break;
+    				default:
+    					mouvement = "";
+    					break;
+    			}
+            }
+            	
+        	mouvement = mouvement.toLowerCase();
+			if ( mouvement.equals("q") )
 			{
 				if ( gauche() ) // si le mouvement est possible, on passe au tour suivant
 					if ( ! tourSuivant() ) // Si on ne peut pas passer au tour suivant, le jeu est terminé
-						finDuJeu = finDuJeuModeConsole();
+						if ( methode != 0 )
+						{
+							finDuJeu = finDuTestConsole(methode, prof, essai, nbEssai, log, file, resultat);
+							essai++;
+						}
+						else
+							finDuJeu = finDuJeuModeConsole();
 			}
-			else if ( mouvement.equals("D") )
+			else if ( mouvement.equals("d") )
 			{
 				if ( droite() )
 					if ( ! tourSuivant() )
-						finDuJeu = finDuJeuModeConsole();
+						if ( methode != 0 )
+						{
+							finDuJeu = finDuTestConsole(methode, prof, essai, nbEssai, log, file, resultat);
+							essai++;
+						}
+						else
+							finDuJeu = finDuJeuModeConsole();
 			}
-			else if ( mouvement.equals("Z") )
+			else if ( mouvement.equals("z") )
 			{
 				if ( haut() )
 					if ( ! tourSuivant() ) 
-						finDuJeu = finDuJeuModeConsole();
+						if ( methode != 0 )
+						{
+							finDuJeu = finDuTestConsole(methode, prof, essai, nbEssai, log, file, resultat);
+							essai++;
+						}
+						else
+							finDuJeu = finDuJeuModeConsole();
 			}
-			else if ( mouvement.equals("S") )
+			else if ( mouvement.equals("s") )
 			{
 				if ( bas() )
 					if ( ! tourSuivant() ) 
-						finDuJeu = finDuJeuModeConsole();
+						if ( methode != 0 )
+						{
+							finDuJeu = finDuTestConsole(methode, prof, essai, nbEssai, log, file, resultat);
+							essai++;
+						}
+						else
+							finDuJeu = finDuJeuModeConsole();
 			}
 			else
 			{
 				System.out.println("Cette commande n'existe pas ! Veuillez réessayer !\n");
 			}
 			
+			System.out.println(toString());
 		}
 		
 		scanner.close();
+		
 	}
 	
 	/**
@@ -109,6 +210,88 @@ public class Plateau
 		else
 			return true ;
 
+	}
+	
+	public boolean finDuTestConsole(int mode, int prof, int essai, int nbEssai, boolean logMode, FileWriter file, ArrayList<Integer> resultat)
+	{
+		try 
+		{							
+			int scoreMax = 0 ;
+			for ( int val : getCellules())
+				if (val > scoreMax) 
+					scoreMax = val ;
+			
+			if (essai <= nbEssai)
+			{
+				if ( logMode )
+				{
+					file.write("Essai "+essai+": "+scoreMax+"\n");
+					resultat.add(scoreMax);
+				}
+				debut();
+
+				return false ;
+
+			}
+			else
+			{
+				if ( logMode )
+				{
+					int nb16384=0, nb8192=0, nb4096=0, nb2048=0, nb1024=0, nb512=0, nb256=0, nb128=0, nb64=0 ;
+					for ( int i : resultat)
+					{
+						switch (i) 
+						{
+							case 16384:
+								nb16384++;
+								break;
+							case 8192:
+								nb8192++;
+								break;
+							case 4096:
+								nb4096++;
+								break;
+							case 2048:
+								nb2048++;
+								break;
+							case 1024:
+								nb1024++;
+								break;
+							case 512:
+								nb512++;
+								break;
+							case 256:
+								nb256++;
+								break;
+							case 128:
+								nb128++;
+								break;
+							case 64:
+								nb64++;
+								break;
+							default:
+								break;
+						}
+					}
+					
+					file.write("\nResultat : ");
+					file.write("\n16384="+nb16384);
+					file.write("\n8192="+nb8192);
+					file.write("\n4096="+nb4096);
+					file.write("\n2048="+nb2048);
+					file.write("\n1024="+nb1024);
+					file.write("\n512="+nb512);
+					file.write("\n256="+nb256);
+					file.write("\n128="+nb128);
+					file.write("\n64="+nb64);
+					
+					file.close();
+				}
+				return true ;
+			}
+			
+		}
+		catch (IOException e) {e.printStackTrace();return false ;}
 	}
 
 	/**
