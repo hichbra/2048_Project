@@ -104,13 +104,17 @@ public class Controleur extends JFrame
 	
 	private void lancerMonteCarlo() 
 	{
+		System.out.println(essai);
 		long startTime = System.currentTimeMillis();
 		boolean fin = false ;
 		boolean mouvPossible = true ;
+		//boolean egaliteDebloquer = false; // Lorsque MonteCarlo revoie toujours la meme direction et que celle ci est impossible : arrive dans le cas ou le dernier coup a jouer conluera la partie peut importe la direction, et que la direction renvoyer par defaut est impossible
+		
 		while(!fin) // Tant que l'on peut jouer
 		{
 			int dir = MonteCarlo.monteCarlo(plateau.getShortTableau()) ;
 
+			
 			//direction : 1=gauche | 2=droite | 3=haut | 4=bas
 			switch(dir)
 			{
@@ -156,6 +160,8 @@ public class Controleur extends JFrame
 	
 	private void lancerAleatoire() 
 	{
+		System.out.println(essai);
+
 		long startTime = System.currentTimeMillis();
 		boolean fin = false ;
 		boolean mouvPossible = true ;
@@ -208,6 +214,8 @@ public class Controleur extends JFrame
 	
 	private void lancerExpectimax() 
 	{
+		System.out.println(essai);
+
 		// Expectimax
 		long startTime = System.currentTimeMillis();
 		boolean fin = false ;
@@ -525,7 +533,7 @@ public class Controleur extends JFrame
 		args[0] = "-l";
 		args[1] = "mc.txt";
 		args[2] = "-m";
-		args[3] = "1";
+		args[3] = "100";
 
 		
 		
