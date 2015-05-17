@@ -528,15 +528,7 @@ public class Controleur extends JFrame
 	
 
 	public static void main(String[] args)
-	{
-		args = new String[4];
-		args[0] = "-l";
-		args[1] = "mc.txt";
-		args[2] = "-m";
-		args[3] = "100";
-
-		
-		
+	{		
 		boolean log = false ;
 		String nomFichierLog = null;
 		boolean graphique = true;
@@ -656,7 +648,7 @@ public class Controleur extends JFrame
 			}
 			else
 			{
-				System.out.println("Cette Argument n'existe pas.\nUsage:\t-c = Mode Console\n\t-l <fichier> = logs\n\t-e <nbEssai> <profondeur> = Expectimax\n\t-m <nbEssai> = Monte-Carlo\n\t-a = Aleatoire <nbEssai>");
+				System.out.println("Cet Argument n'existe pas.\nUsage:\t-c = Mode Console\n\t-l <fichier> = logs\n\t-e <nbEssai> <profondeur> = Expectimax\n\t-m <nbEssai> = Monte-Carlo\n\t-a = Aleatoire <nbEssai>");
 				System.exit(4);
 			}
 			
@@ -664,9 +656,12 @@ public class Controleur extends JFrame
 		
 		if ( log && methode == 0)
 		{
-			System.out.println("Erreur !\nVous devez appliquée une méthode pour faire des logs");
+			System.out.println("Erreur !\nVous devez appliquer une méthode pour faire des logs");
 			System.exit(6);
 		}
+		
+		if ( !log )
+			nbEssai--;
 		
 		new Controleur(log, nomFichierLog, graphique, methode, nbEssai, profondeur) ;
 	
